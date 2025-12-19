@@ -19,7 +19,7 @@ En esta sección se explica el proceso de instalación de todas las dependencias
 ### 📝 Clonar Repositorio
 
 ```sh
-git clone [https://github.com/AndresFr56/GymVitae.git](https://github.com/RicardoVillamar/autovitae_flutter.git)
+git clone https://github.com/RicardoVillamar/autovitae_flutter.git
 cd Autovitae_flutter
 ```
 

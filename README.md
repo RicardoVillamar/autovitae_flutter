@@ -20,7 +20,7 @@ En esta sección se explica el proceso de instalación de todas las dependencias
 
 ```sh
 git clone https://github.com/RicardoVillamar/autovitae_flutter.git
-cd Autovitae_flutter
+cd autovitae_flutter
 ```
 
 o tambien puedes decargar el zip de la ultima release/Commit del Repositorio

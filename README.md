@@ -1,16 +1,33 @@
-# autovitae
+<div align ="center">
+  
+## Autovitae - Sistema de gestion de talleres y servicios de mantenimiento para clientes y gerentes
+
+</div>
 
 A new Flutter project.
 
-## Getting Started
+## Instalacion
 
-This project is a starting point for a Flutter application.
+En esta sección se explica el proceso de instalación de todas las dependencias necesarias para ejecutar el proyecto.
 
-A few resources to get you started if this is your first Flutter project:
+### 📦 Requerimientos de Instalacion
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [Git](https://git-scm.com)
+- [Visual Studio Code](https://code.visualstudio.com)
+- [Flutter](https://docs.flutter.dev/install/manual)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 📝 Clonar Repositorio
+
+```sh
+git clone [https://github.com/AndresFr56/GymVitae.git](https://github.com/RicardoVillamar/autovitae_flutter.git)
+cd Autovitae_flutter
+```
+
+o tambien puedes decargar el zip de la ultima release/Commit del Repositorio
+
+### 🖥️ Variables de Entorno .env
+
+Actualmente tenemos un archivo `.env-template` copie el archivo y cambie el nombre por `.env`
+
+ejemplo del contenido del archivo `.env`
+

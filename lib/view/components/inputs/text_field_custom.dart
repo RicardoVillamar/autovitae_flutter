@@ -13,6 +13,7 @@ class TxtffCustom extends StatelessWidget {
   final bool showCounter;
   final int maxLength;
   final Function(String)? onChanged;
+  final bool obscureText;
 
   const TxtffCustom({
     super.key,
@@ -25,6 +26,7 @@ class TxtffCustom extends StatelessWidget {
     this.showCounter = true,
     this.maxLength = 100,
     this.onChanged,
+    this.obscureText = false,
   });
 
   @override
@@ -35,6 +37,7 @@ class TxtffCustom extends StatelessWidget {
       keyboardType: keyboardType,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: validator,
+      obscureText: obscureText,
       inputFormatters: inputFormatters,
       onChanged: onChanged,
       cursorColor: AppColors.white,

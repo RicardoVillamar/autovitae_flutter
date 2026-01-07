@@ -1,5 +1,5 @@
 <div align ="center">
-  
+
 ## Autovitae - Sistema de gestion de talleres y servicios de mantenimiento para clientes y gerentes
 
 </div>
@@ -15,6 +15,9 @@ En esta sección se explica el proceso de instalación de todas las dependencias
 - [Git](https://git-scm.com)
 - [Visual Studio Code](https://code.visualstudio.com)
 - [Flutter](https://docs.flutter.dev/install/manual)
+- [Firebase CLI](https://firebase.google.com/docs/cli)
+- [Dart](https://dart.dev/get-dart)
+- [Android Studio](https://developer.android.com/studio)
 
 ### 📝 Clonar Repositorio
 
@@ -24,6 +27,19 @@ cd autovitae_flutter
 ```
 
 o tambien puedes decargar el zip de la ultima release/Commit del Repositorio
+
+### 📲 Instalacion de Dependencia
+
+```sh
+flutter pub get
+```
+
+### Iniciarlizar Firebase
+
+```sh
+  dart pub global activate flutterfire_cli
+  flutterfire configure --project=nombre-de-tu-proyecto
+```
 
 ### 🖥️ Variables de Entorno .env
 

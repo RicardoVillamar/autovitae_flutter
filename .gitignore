@@ -54,3 +54,14 @@ app.*.map.json
 
 # Local environment configuration file
 .env
+
+# firebase options dart
+lib/firebase_options.dart
+
+firebase.json
+
+# Generated files
+lib/generated_plugin_registrant.dart
+
+# Locks
+pubspec.lock

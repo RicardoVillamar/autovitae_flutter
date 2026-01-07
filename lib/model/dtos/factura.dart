@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/data/model/enums/metodo_pago.dart';
-import 'package:autovitae/data/model/enums/estado_factura.dart';
+import 'package:autovitae/model/enums/metodo_pago.dart';
+import 'package:autovitae/model/enums/estado_factura.dart';
 
 class Factura {
   final String? uidFactura;

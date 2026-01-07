@@ -1,4 +1,4 @@
-import 'package:autovitae/data/model/enums/rol_usuario.dart';
+import 'package:autovitae/model/enums/rol_usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Usuario {
@@ -57,6 +57,40 @@ class Usuario {
       'rol': rol.value,
       'estado': estado,
       'fechaRegistro': fechaRegistro,
+    };
+  }
+
+  factory Usuario.fromMap(Map<String, dynamic> map) {
+    return Usuario(
+      uidUsuario: map['uidUsuario'],
+      nombre: map['nombre'] ?? '',
+      apellido: map['apellido'] ?? '',
+      correo: map['correo'] ?? '',
+      cedula: map['cedula'] ?? '',
+      telefono: map['telefono'] ?? '',
+      fotoUrl: map['fotoUrl'],
+      rol: RolUsuarioX.fromString(map['rol'] ?? 'cliente'),
+      estado: (map['estado'] ?? 1) as int,
+      fechaRegistro: map['fechaRegistro'] is Timestamp
+          ? map['fechaRegistro']
+          : (map['fechaRegistro'] != null
+                ? Timestamp.fromMillisecondsSinceEpoch(map['fechaRegistro'])
+                : Timestamp.now()),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uidUsuario': uidUsuario,
+      'nombre': nombre,
+      'apellido': apellido,
+      'cedula': cedula,
+      'correo': correo,
+      'telefono': telefono,
+      'fotoUrl': fotoUrl,
+      'rol': rol.value,
+      'estado': estado,
+      'fechaRegistro': fechaRegistro.millisecondsSinceEpoch,
     };
   }
 }

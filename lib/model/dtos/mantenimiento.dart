@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/data/model/enums/estado_mantenimineto.dart';
+import 'package:autovitae/model/enums/estado_mantenimineto.dart';
 
 class Mantenimiento {
   final String? uidMantenimiento;

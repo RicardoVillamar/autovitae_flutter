@@ -1,5 +1,5 @@
+import 'package:autovitae/model/enums/estado_cita.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/data/model/enums/estado_cita.dart';
 
 class Cita {
   final String? uidCita;

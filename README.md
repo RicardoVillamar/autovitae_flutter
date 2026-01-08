@@ -37,6 +37,7 @@ flutter pub get
 ### Iniciarlizar Firebase
 
 ```sh
+
   dart pub global activate flutterfire_cli
   flutterfire configure --project=nombre-de-tu-proyecto
 ```
@@ -47,3 +48,13 @@ Actualmente tenemos un archivo `.env-template` copie el archivo y cambie el nomb
 
 ejemplo del contenido del archivo `.env`
 
+### Modulos
+
+- auth: Modulo de autenticacion de usuarios []
+- cliente: Modulo de gestion de clientes []
+- gerentes: Modulo de gestion de gerentes []
+- talleres: Modulo de gestion de talleres []
+- vehiculos: Modulo de gestion de vehiculos de los clientes []
+- servicios: Modulo de gestion de servicios en el taller [.]
+- mantenimiento: Modulo de gestion de mantenimiento de vehiculos [.]
+- facturacion: Modulo de gestion de facturacion [.]

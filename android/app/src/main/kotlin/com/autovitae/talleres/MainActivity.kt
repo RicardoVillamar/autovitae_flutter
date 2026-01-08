@@ -1,4 +1,4 @@
-package com.example.autovitae
+package com.autovitae.talleres
 
 import io.flutter.embedding.android.FlutterActivity
 

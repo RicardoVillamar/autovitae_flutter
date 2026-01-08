@@ -1,4 +1,4 @@
-import 'package:autovitae/utils/colors.dart';
+import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTextStyles {

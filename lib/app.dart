@@ -1,11 +1,7 @@
-import 'package:autovitae/utils/colors.dart';
+import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:autovitae/routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-void main() {
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,6 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AutoVitae',
+      initialRoute: '/',
       routes: routes,
       theme: ThemeData(
         useMaterial3: true,

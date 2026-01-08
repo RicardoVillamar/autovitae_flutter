@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:autovitae/model/dtos/usuario.dart';
-import 'package:autovitae/model/dtos/cliente.dart';
-import 'package:autovitae/model/dtos/gerente.dart';
-import 'package:autovitae/model/enums/rol_usuario.dart';
+import 'package:autovitae/data/models/usuario.dart';
+import 'package:autovitae/data/models/cliente.dart';
+import 'package:autovitae/data/models/gerente.dart';
+import 'package:autovitae/data/models/rol_usuario.dart';
 
 class SessionManager {
   static const String _keyUsuario = 'usuario';

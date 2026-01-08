@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/mantenimiento.dart';
-import 'package:autovitae/model/enums/estado_mantenimineto.dart';
+import 'package:autovitae/data/models/mantenimiento.dart';
+import 'package:autovitae/data/models/estado_mantenimiento.dart';
 
 class MantenimientoRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -49,17 +49,35 @@ class MantenimientoRepository {
     }
   }
 
+  // Obtener mantenimientos por cliente
+  Future<List<Mantenimiento>> getByClienteId(String uidCliente) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(_collection)
+          .where('uidCliente', isEqualTo: uidCliente)
+          .get();
+      final mantenimientos = querySnapshot.docs
+          .map((doc) => Mantenimiento.fromFirestore(doc))
+          .toList();
+      mantenimientos.sort((a, b) => b.fechaProgramada.compareTo(a.fechaProgramada));
+      return mantenimientos;
+    } catch (e) {
+      throw Exception('Error al obtener mantenimientos por cliente: $e');
+    }
+  }
+
   // Obtener mantenimientos por taller
   Future<List<Mantenimiento>> getByTallerId(String uidTaller) async {
     try {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('uidTaller', isEqualTo: uidTaller)
-          .orderBy('fechaInicio', descending: true)
           .get();
-      return querySnapshot.docs
+      final mantenimientos = querySnapshot.docs
           .map((doc) => Mantenimiento.fromFirestore(doc))
           .toList();
+      mantenimientos.sort((a, b) => b.fechaProgramada.compareTo(a.fechaProgramada));
+      return mantenimientos;
     } catch (e) {
       throw Exception('Error al obtener mantenimientos por taller: $e');
     }
@@ -71,11 +89,12 @@ class MantenimientoRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('estado', isEqualTo: estado.value)
-          .orderBy('fechaInicio', descending: true)
           .get();
-      return querySnapshot.docs
+      final mantenimientos = querySnapshot.docs
           .map((doc) => Mantenimiento.fromFirestore(doc))
           .toList();
+      mantenimientos.sort((a, b) => b.fechaProgramada.compareTo(a.fechaProgramada));
+      return mantenimientos;
     } catch (e) {
       throw Exception('Error al obtener mantenimientos por estado: $e');
     }
@@ -91,11 +110,12 @@ class MantenimientoRepository {
           .collection(_collection)
           .where('uidTaller', isEqualTo: uidTaller)
           .where('estado', isEqualTo: estado.value)
-          .orderBy('fechaInicio', descending: true)
           .get();
-      return querySnapshot.docs
+      final mantenimientos = querySnapshot.docs
           .map((doc) => Mantenimiento.fromFirestore(doc))
           .toList();
+      mantenimientos.sort((a, b) => b.fechaProgramada.compareTo(a.fechaProgramada));
+      return mantenimientos;
     } catch (e) {
       throw Exception(
         'Error al obtener mantenimientos por taller y estado: $e',
@@ -108,7 +128,7 @@ class MantenimientoRepository {
     try {
       final querySnapshot = await _firestore
           .collection(_collection)
-          .orderBy('fechaInicio', descending: true)
+          .orderBy('fechaProgramada', descending: true)
           .get();
       return querySnapshot.docs
           .map((doc) => Mantenimiento.fromFirestore(doc))
@@ -133,9 +153,19 @@ class MantenimientoRepository {
   // Actualizar estado
   Future<void> updateEstado(String uid, EstadoMantenimiento estado) async {
     try {
-      await _firestore.collection(_collection).doc(uid).update({
-        'estado': estado.value,
-      });
+      final Map<String, dynamic> updateData = {'estado': estado.value};
+      
+      // Si cambia a enProceso, establecer fechaInicio
+      if (estado == EstadoMantenimiento.enProceso) {
+        updateData['fechaInicio'] = Timestamp.now().millisecondsSinceEpoch;
+      }
+      
+      // Si cambia a finalizado, establecer fechaFin
+      if (estado == EstadoMantenimiento.finalizado) {
+        updateData['fechaFin'] = Timestamp.now().millisecondsSinceEpoch;
+      }
+
+      await _firestore.collection(_collection).doc(uid).update(updateData);
     } catch (e) {
       throw Exception('Error al actualizar estado: $e');
     }

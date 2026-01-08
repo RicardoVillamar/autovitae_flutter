@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/factura.dart';
-import 'package:autovitae/model/enums/estado_factura.dart';
-import 'package:autovitae/model/enums/metodo_pago.dart';
+import 'package:autovitae/data/models/factura.dart';
+import 'package:autovitae/data/models/estado_factura.dart';
+import 'package:autovitae/data/models/metodo_pago.dart';
 
 class FacturaRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -56,11 +56,12 @@ class FacturaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('uidCliente', isEqualTo: uidCliente)
-          .orderBy('fechaEmision', descending: true)
           .get();
-      return querySnapshot.docs
+      final facturas = querySnapshot.docs
           .map((doc) => Factura.fromFirestore(doc))
           .toList();
+      facturas.sort((a, b) => b.fechaEmision.compareTo(a.fechaEmision));
+      return facturas;
     } catch (e) {
       throw Exception('Error al obtener facturas por cliente: $e');
     }
@@ -72,11 +73,12 @@ class FacturaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('estado', isEqualTo: estado.value)
-          .orderBy('fechaEmision', descending: true)
           .get();
-      return querySnapshot.docs
+      final facturas = querySnapshot.docs
           .map((doc) => Factura.fromFirestore(doc))
           .toList();
+      facturas.sort((a, b) => b.fechaEmision.compareTo(a.fechaEmision));
+      return facturas;
     } catch (e) {
       throw Exception('Error al obtener facturas por estado: $e');
     }
@@ -88,11 +90,12 @@ class FacturaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('metodoPago', isEqualTo: metodoPago.value)
-          .orderBy('fechaEmision', descending: true)
           .get();
-      return querySnapshot.docs
+      final facturas = querySnapshot.docs
           .map((doc) => Factura.fromFirestore(doc))
           .toList();
+      facturas.sort((a, b) => b.fechaEmision.compareTo(a.fechaEmision));
+      return facturas;
     } catch (e) {
       throw Exception('Error al obtener facturas por metodo de pago: $e');
     }

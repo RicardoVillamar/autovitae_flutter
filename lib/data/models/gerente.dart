@@ -6,7 +6,7 @@ class Gerente {
   final String? uidTaller;
   final int estado;
   final bool primerLogin;
-  final Timestamp fechaAsignacion;
+  final int fechaAsignacion;
 
   Gerente({
     this.uidGerente,
@@ -14,8 +14,9 @@ class Gerente {
     this.uidTaller,
     this.estado = 1,
     this.primerLogin = true,
-    Timestamp? fechaAsignacion,
-  }) : fechaAsignacion = fechaAsignacion ?? Timestamp.now();
+    int? fechaAsignacion,
+  }) : fechaAsignacion =
+           fechaAsignacion ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Gerente.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
@@ -24,11 +25,12 @@ class Gerente {
     }
     return Gerente(
       uidGerente: doc.id,
-      uidUsuario: data['uidUsuario'] ?? '',
-      uidTaller: data['uidTaller'] ?? '',
+      uidUsuario: data['uidUsuario'] as String?,
+      uidTaller: data['uidTaller'] as String?,
       estado: (data['estado'] ?? 1) as int,
       primerLogin: data['primerLogin'] ?? true,
-      fechaAsignacion: data['fechaAsignacion'] ?? Timestamp.now(),
+      fechaAsignacion:
+          data['fechaAsignacion'] ?? DateTime.now().millisecondsSinceEpoch,
     );
   }
 

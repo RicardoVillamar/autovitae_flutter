@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/enums/estado_remolque.dart';
+import 'package:autovitae/data/models/estado_remolque.dart';
 
 class SolicitudRemolque {
   final String? uidSolicitud;
@@ -7,7 +7,7 @@ class SolicitudRemolque {
   final String uidVehiculo;
   final String uidTaller;
   final String? ubicacionActual;
-  final Timestamp fechaSolicitud;
+  final int fechaSolicitud;
   final EstadoRemolque estado;
   final String? observaciones;
 
@@ -17,10 +17,10 @@ class SolicitudRemolque {
     required this.uidVehiculo,
     required this.uidTaller,
     this.ubicacionActual,
-    Timestamp? fechaSolicitud,
+    int? fechaSolicitud,
     this.estado = EstadoRemolque.pendiente,
     this.observaciones,
-  }) : fechaSolicitud = fechaSolicitud ?? Timestamp.now();
+  }) : fechaSolicitud = fechaSolicitud ?? DateTime.now().millisecondsSinceEpoch;
 
   factory SolicitudRemolque.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
@@ -35,7 +35,13 @@ class SolicitudRemolque {
       uidVehiculo: data['uidVehiculo'] ?? '',
       uidTaller: data['uidTaller'] ?? '',
       ubicacionActual: data['ubicacionActual'] ?? '',
-      fechaSolicitud: data['fechaSolicitud'] ?? Timestamp.now(),
+      fechaSolicitud: (() {
+        final v = data['fechaSolicitud'];
+        if (v is int) return v;
+        if (v is num) return v.toInt();
+        if (v is Timestamp) return v.millisecondsSinceEpoch;
+        return DateTime.now().millisecondsSinceEpoch;
+      })(),
       estado: EstadoRemolqueX.fromString(data['estado'] ?? 'pendiente'),
       observaciones: data['observaciones'] ?? '',
     );

@@ -1,4 +1,4 @@
-import 'package:autovitae/model/enums/estado_cita.dart';
+import 'package:autovitae/data/models/estado_cita.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Cita {
@@ -6,22 +6,22 @@ class Cita {
   final String uidCliente;
   final String uidVehiculo;
   final String uidTaller;
-  final Timestamp fechaCita;
+  final int fechaCita;
   final EstadoCita estado;
   final String? descripcion;
-  final Timestamp fechaCreacion;
+  final int fechaCreacion;
 
   Cita({
     this.uidCita,
     required this.uidCliente,
     required this.uidVehiculo,
     required this.uidTaller,
-    Timestamp? fechaCita,
+    int? fechaCita,
     this.estado = EstadoCita.pendiente,
     this.descripcion,
-    Timestamp? fechaCreacion,
-  }) : fechaCita = fechaCita ?? Timestamp.now(),
-       fechaCreacion = fechaCreacion ?? Timestamp.now();
+    int? fechaCreacion,
+  }) : fechaCita = fechaCita ?? DateTime.now().millisecondsSinceEpoch,
+       fechaCreacion = fechaCreacion ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Cita.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
@@ -33,10 +33,16 @@ class Cita {
       uidCliente: data['uidCliente'] ?? '',
       uidVehiculo: data['uidVehiculo'] ?? '',
       uidTaller: data['uidTaller'] ?? '',
-      fechaCita: data['fechaCita'] ?? Timestamp.now(),
+      fechaCita: data['fechaCita'] ?? DateTime.now().millisecondsSinceEpoch,
       estado: EstadoCitaX.fromString(data['estado'] ?? 'pendiente'),
       descripcion: data['descripcion'] ?? '',
-      fechaCreacion: data['fechaCreacion'] ?? Timestamp.now(),
+      fechaCreacion: (() {
+        final v = data['fechaCreacion'];
+        if (v is int) return v;
+        if (v is num) return v.toInt();
+        if (v is Timestamp) return v.millisecondsSinceEpoch;
+        return DateTime.now().millisecondsSinceEpoch;
+      })(),
     );
   }
 

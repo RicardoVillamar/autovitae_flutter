@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/enums/categoria_serivicio_taller.dart';
+import 'package:autovitae/data/models/categoria_serivicio_taller.dart';
 
 class ServicioTaller {
   final String? uidServicio;

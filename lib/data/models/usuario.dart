@@ -1,4 +1,4 @@
-import 'package:autovitae/model/enums/rol_usuario.dart';
+import 'package:autovitae/data/models/rol_usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Usuario {
@@ -11,7 +11,7 @@ class Usuario {
   final String? fotoUrl;
   final RolUsuario rol;
   final int estado;
-  final Timestamp fechaRegistro;
+  final int fechaRegistro;
 
   Usuario({
     this.uidUsuario,
@@ -23,8 +23,8 @@ class Usuario {
     this.fotoUrl,
     this.rol = RolUsuario.cliente,
     this.estado = 1,
-    Timestamp? fechaRegistro,
-  }) : fechaRegistro = fechaRegistro ?? Timestamp.now();
+    int? fechaRegistro,
+  }) : fechaRegistro = fechaRegistro ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Usuario.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
@@ -41,7 +41,8 @@ class Usuario {
       fotoUrl: data['fotoUrl'] ?? '',
       rol: RolUsuarioX.fromString(data['rol'] ?? 'cliente'),
       estado: (data['estado'] ?? 1) as int,
-      fechaRegistro: data['fechaRegistro'] ?? Timestamp.now(),
+      fechaRegistro:
+          data['fechaRegistro'] ?? DateTime.now().millisecondsSinceEpoch,
     );
   }
 
@@ -71,11 +72,17 @@ class Usuario {
       fotoUrl: map['fotoUrl'],
       rol: RolUsuarioX.fromString(map['rol'] ?? 'cliente'),
       estado: (map['estado'] ?? 1) as int,
-      fechaRegistro: map['fechaRegistro'] is Timestamp
-          ? map['fechaRegistro']
-          : (map['fechaRegistro'] != null
-                ? Timestamp.fromMillisecondsSinceEpoch(map['fechaRegistro'])
-                : Timestamp.now()),
+      fechaRegistro: (() {
+        final v = map['fechaRegistro'];
+        if (v is int) return v;
+        if (v is num) return v.toInt();
+        if (v is Timestamp) return v.millisecondsSinceEpoch;
+        if (v != null) {
+          return int.tryParse(v.toString()) ??
+              DateTime.now().millisecondsSinceEpoch;
+        }
+        return DateTime.now().millisecondsSinceEpoch;
+      })(),
     );
   }
 
@@ -90,7 +97,7 @@ class Usuario {
       'fotoUrl': fotoUrl,
       'rol': rol.value,
       'estado': estado,
-      'fechaRegistro': fechaRegistro.millisecondsSinceEpoch,
+      'fechaRegistro': fechaRegistro,
     };
   }
 }

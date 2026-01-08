@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/enums/metodo_pago.dart';
-import 'package:autovitae/model/enums/estado_factura.dart';
+import 'package:autovitae/data/models/metodo_pago.dart';
+import 'package:autovitae/data/models/estado_factura.dart';
 
 class Factura {
   final String? uidFactura;
   final String uidMantenimiento;
   final String uidCliente;
-  final Timestamp fechaEmision;
+  final int fechaEmision;
   final double subtotal;
   final double iva;
   final double total;
@@ -17,13 +17,13 @@ class Factura {
     this.uidFactura,
     required this.uidMantenimiento,
     required this.uidCliente,
-    Timestamp? fechaEmision,
+    int? fechaEmision,
     this.subtotal = 0.0,
     this.iva = 0.0,
     this.total = 0.0,
     this.metodoPago = MetodoPago.efectivo,
     this.estado = EstadoFactura.pendiente,
-  }) : fechaEmision = fechaEmision ?? Timestamp.now();
+  }) : fechaEmision = fechaEmision ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Factura.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
@@ -34,7 +34,8 @@ class Factura {
       uidFactura: doc.id,
       uidMantenimiento: data['uidMantenimiento'] ?? '',
       uidCliente: data['uidCliente'] ?? '',
-      fechaEmision: data['fechaEmision'] ?? Timestamp.now(),
+      fechaEmision:
+          data['fechaEmision'] ?? DateTime.now().millisecondsSinceEpoch,
       subtotal: (data['subtotal'] is num)
           ? (data['subtotal'] as num).toDouble()
           : double.tryParse((data['subtotal'] ?? 0).toString()) ?? 0.0,

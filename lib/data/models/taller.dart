@@ -9,7 +9,7 @@ class Taller {
   final String correo;
   final String descripcion;
   final int estado;
-  final Timestamp fechaRegistro;
+  final int fechaRegistro;
 
   Taller({
     this.uidTaller,
@@ -20,8 +20,8 @@ class Taller {
     required this.correo,
     required this.descripcion,
     this.estado = 1,
-    Timestamp? fechaRegistro,
-  }) : fechaRegistro = fechaRegistro ?? Timestamp.now();
+    int? fechaRegistro,
+  }) : fechaRegistro = fechaRegistro ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Taller.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
@@ -37,7 +37,8 @@ class Taller {
       correo: data['correo'] ?? '',
       descripcion: data['descripcion'] ?? '',
       estado: (data['estado'] ?? 1) as int,
-      fechaRegistro: data['fechaRegistro'] ?? Timestamp.now(),
+      fechaRegistro:
+          data['fechaRegistro'] ?? DateTime.now().millisecondsSinceEpoch,
     );
   }
 

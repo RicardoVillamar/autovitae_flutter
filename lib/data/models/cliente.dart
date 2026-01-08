@@ -22,7 +22,7 @@ class Cliente {
     }
     return Cliente(
       uidCliente: doc.id,
-      uidUsuario: data['uidUsuario'] ?? '',
+      uidUsuario: data['uidUsuario'] as String?,
       direccion: data['direccion'] ?? '',
       ciudad: data['ciudad'] ?? '',
       estado: (data['estado'] ?? 1) as int,

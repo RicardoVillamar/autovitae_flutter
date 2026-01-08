@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/cita.dart';
-import 'package:autovitae/model/enums/estado_cita.dart';
+import 'package:autovitae/data/models/cita.dart';
+import 'package:autovitae/data/models/estado_cita.dart';
 
 class CitaRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -37,9 +37,12 @@ class CitaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('uidCliente', isEqualTo: uidCliente)
-          .orderBy('fechaCita', descending: true)
           .get();
-      return querySnapshot.docs.map((doc) => Cita.fromFirestore(doc)).toList();
+      final citas = querySnapshot.docs
+          .map((doc) => Cita.fromFirestore(doc))
+          .toList();
+      citas.sort((a, b) => b.fechaCita.compareTo(a.fechaCita));
+      return citas;
     } catch (e) {
       throw Exception('Error al obtener citas por cliente: $e');
     }
@@ -51,9 +54,12 @@ class CitaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('uidTaller', isEqualTo: uidTaller)
-          .orderBy('fechaCita', descending: true)
           .get();
-      return querySnapshot.docs.map((doc) => Cita.fromFirestore(doc)).toList();
+      final citas = querySnapshot.docs
+          .map((doc) => Cita.fromFirestore(doc))
+          .toList();
+      citas.sort((a, b) => b.fechaCita.compareTo(a.fechaCita));
+      return citas;
     } catch (e) {
       throw Exception('Error al obtener citas por taller: $e');
     }
@@ -65,9 +71,12 @@ class CitaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('uidVehiculo', isEqualTo: uidVehiculo)
-          .orderBy('fechaCita', descending: true)
           .get();
-      return querySnapshot.docs.map((doc) => Cita.fromFirestore(doc)).toList();
+      final citas = querySnapshot.docs
+          .map((doc) => Cita.fromFirestore(doc))
+          .toList();
+      citas.sort((a, b) => b.fechaCita.compareTo(a.fechaCita));
+      return citas;
     } catch (e) {
       throw Exception('Error al obtener citas por vehiculo: $e');
     }
@@ -79,9 +88,12 @@ class CitaRepository {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('estado', isEqualTo: estado.value)
-          .orderBy('fechaCita', descending: true)
           .get();
-      return querySnapshot.docs.map((doc) => Cita.fromFirestore(doc)).toList();
+      final citas = querySnapshot.docs
+          .map((doc) => Cita.fromFirestore(doc))
+          .toList();
+      citas.sort((a, b) => b.fechaCita.compareTo(a.fechaCita));
+      return citas;
     } catch (e) {
       throw Exception('Error al obtener citas por estado: $e');
     }
@@ -97,9 +109,12 @@ class CitaRepository {
           .collection(_collection)
           .where('uidTaller', isEqualTo: uidTaller)
           .where('estado', isEqualTo: estado.value)
-          .orderBy('fechaCita', descending: true)
           .get();
-      return querySnapshot.docs.map((doc) => Cita.fromFirestore(doc)).toList();
+      final citas = querySnapshot.docs
+          .map((doc) => Cita.fromFirestore(doc))
+          .toList();
+      citas.sort((a, b) => b.fechaCita.compareTo(a.fechaCita));
+      return citas;
     } catch (e) {
       throw Exception('Error al obtener citas por taller y estado: $e');
     }

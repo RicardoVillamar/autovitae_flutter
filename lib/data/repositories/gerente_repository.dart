@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/gerente.dart';
+import 'package:autovitae/data/models/gerente.dart';
 
 class GerenteRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collection = 'gerentes';
+  final String _collection = 'gerente';
 
   // Crear gerente
   Future<String> create(Gerente gerente) async {

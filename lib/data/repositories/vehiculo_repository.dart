@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/vehiculo.dart';
+import 'package:autovitae/data/models/vehiculo.dart';
 
 class VehiculoRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

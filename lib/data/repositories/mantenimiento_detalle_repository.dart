@@ -1,59 +1,61 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/factura_detalle.dart';
+import 'package:autovitae/data/models/mantenimiento_detalle.dart';
 
-class FacturaDetalleRepository {
+class MantenimientoDetalleRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collection = 'facturas_detalle';
+  final String _collection = 'mantenimientos_detalle';
 
   // Crear detalle
-  Future<String> create(FacturaDetalle detalle) async {
+  Future<String> create(MantenimientoDetalle detalle) async {
     try {
       final docRef = await _firestore
           .collection(_collection)
           .add(detalle.toFirestore());
       return docRef.id;
     } catch (e) {
-      throw Exception('Error al crear detalle de factura: $e');
+      throw Exception('Error al crear detalle de mantenimiento: $e');
     }
   }
 
   // Obtener detalle por ID
-  Future<FacturaDetalle?> getById(String uid) async {
+  Future<MantenimientoDetalle?> getById(String uid) async {
     try {
       final doc = await _firestore.collection(_collection).doc(uid).get();
       if (doc.exists) {
-        return FacturaDetalle.fromFirestore(doc);
+        return MantenimientoDetalle.fromFirestore(doc);
       }
       return null;
     } catch (e) {
-      throw Exception('Error al obtener detalle de factura: $e');
+      throw Exception('Error al obtener detalle de mantenimiento: $e');
     }
   }
 
-  // Obtener detalles por factura
-  Future<List<FacturaDetalle>> getByFacturaId(String uidFactura) async {
+  // Obtener detalles por mantenimiento
+  Future<List<MantenimientoDetalle>> getByMantenimientoId(
+    String uidMantenimiento,
+  ) async {
     try {
       final querySnapshot = await _firestore
           .collection(_collection)
-          .where('uidFactura', isEqualTo: uidFactura)
+          .where('uidMantenimiento', isEqualTo: uidMantenimiento)
           .get();
       return querySnapshot.docs
-          .map((doc) => FacturaDetalle.fromFirestore(doc))
+          .map((doc) => MantenimientoDetalle.fromFirestore(doc))
           .toList();
     } catch (e) {
-      throw Exception('Error al obtener detalles por factura: $e');
+      throw Exception('Error al obtener detalles por mantenimiento: $e');
     }
   }
 
   // Obtener detalles por servicio
-  Future<List<FacturaDetalle>> getByServicioId(String uidServicio) async {
+  Future<List<MantenimientoDetalle>> getByServicioId(String uidServicio) async {
     try {
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('uidServicio', isEqualTo: uidServicio)
           .get();
       return querySnapshot.docs
-          .map((doc) => FacturaDetalle.fromFirestore(doc))
+          .map((doc) => MantenimientoDetalle.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw Exception('Error al obtener detalles por servicio: $e');
@@ -61,11 +63,11 @@ class FacturaDetalleRepository {
   }
 
   // Obtener todos los detalles
-  Future<List<FacturaDetalle>> getAll() async {
+  Future<List<MantenimientoDetalle>> getAll() async {
     try {
       final querySnapshot = await _firestore.collection(_collection).get();
       return querySnapshot.docs
-          .map((doc) => FacturaDetalle.fromFirestore(doc))
+          .map((doc) => MantenimientoDetalle.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw Exception('Error al obtener detalles: $e');
@@ -73,7 +75,7 @@ class FacturaDetalleRepository {
   }
 
   // Actualizar detalle
-  Future<void> update(String uid, FacturaDetalle detalle) async {
+  Future<void> update(String uid, MantenimientoDetalle detalle) async {
     try {
       await _firestore
           .collection(_collection)
@@ -104,19 +106,19 @@ class FacturaDetalleRepository {
     }
   }
 
-  // Eliminar todos los detalles de una factura
-  Future<void> deleteByFacturaId(String uidFactura) async {
+  // Eliminar todos los detalles de un mantenimiento
+  Future<void> deleteByMantenimientoId(String uidMantenimiento) async {
     try {
       final querySnapshot = await _firestore
           .collection(_collection)
-          .where('uidFactura', isEqualTo: uidFactura)
+          .where('uidMantenimiento', isEqualTo: uidMantenimiento)
           .get();
 
       for (var doc in querySnapshot.docs) {
         await doc.reference.delete();
       }
     } catch (e) {
-      throw Exception('Error al eliminar detalles de la factura: $e');
+      throw Exception('Error al eliminar detalles del mantenimiento: $e');
     }
   }
 }

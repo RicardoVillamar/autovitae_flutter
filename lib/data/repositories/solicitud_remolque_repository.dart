@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/solicitud_remolque.dart';
-import 'package:autovitae/model/enums/estado_remolque.dart';
+import 'package:autovitae/data/models/solicitud_remolque.dart';
+import 'package:autovitae/data/models/estado_remolque.dart';
 
 class SolicitudRemolqueRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/usuario.dart';
+import 'package:autovitae/data/models/usuario.dart';
 
 class UsuarioRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/taller.dart';
+import 'package:autovitae/data/models/taller.dart';
 
 class TallerRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

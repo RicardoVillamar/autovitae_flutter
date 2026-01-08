@@ -1,29 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:autovitae/model/dtos/servicio_taller.dart';
-import 'package:autovitae/model/enums/categoria_serivicio_taller.dart';
+import 'package:autovitae/data/models/servicio_taller.dart';
+import 'package:autovitae/data/models/categoria_serivicio_taller.dart';
 
 class ServicioTallerRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collection = 'servicios_taller';
+  final String _collection = 'servicios';
+
+  CollectionReference<Map<String, dynamic>> _getTallerServiciosRef(
+    String uidTaller,
+  ) {
+    return _firestore
+        .collection('talleres')
+        .doc(uidTaller)
+        .collection(_collection);
+  }
 
   // Crear servicio
   Future<String> create(ServicioTaller servicio) async {
     try {
-      final docRef = await _firestore
-          .collection(_collection)
-          .add(servicio.toFirestore());
+      final docRef = await _getTallerServiciosRef(
+        servicio.uidTaller,
+      ).add(servicio.toFirestore());
       return docRef.id;
     } catch (e) {
       throw Exception('Error al crear servicio: $e');
     }
   }
 
-  // Obtener servicio por ID
+  // Obtener servicio por ID (Busca en todos los talleres usando collectionGroup)
   Future<ServicioTaller?> getById(String uid) async {
     try {
-      final doc = await _firestore.collection(_collection).doc(uid).get();
-      if (doc.exists) {
-        return ServicioTaller.fromFirestore(doc);
+      final querySnapshot = await _firestore
+          .collectionGroup(_collection)
+          .where(FieldPath.documentId, isEqualTo: uid)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return ServicioTaller.fromFirestore(querySnapshot.docs.first);
       }
       return null;
     } catch (e) {
@@ -34,10 +48,7 @@ class ServicioTallerRepository {
   // Obtener servicios por taller
   Future<List<ServicioTaller>> getByTallerId(String uidTaller) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('uidTaller', isEqualTo: uidTaller)
-          .get();
+      final querySnapshot = await _getTallerServiciosRef(uidTaller).get();
       return querySnapshot.docs
           .map((doc) => ServicioTaller.fromFirestore(doc))
           .toList();
@@ -49,11 +60,9 @@ class ServicioTallerRepository {
   // Obtener servicios activos por taller
   Future<List<ServicioTaller>> getActiveByTallerId(String uidTaller) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('uidTaller', isEqualTo: uidTaller)
-          .where('estado', isEqualTo: 1)
-          .get();
+      final querySnapshot = await _getTallerServiciosRef(
+        uidTaller,
+      ).where('estado', isEqualTo: 1).get();
       return querySnapshot.docs
           .map((doc) => ServicioTaller.fromFirestore(doc))
           .toList();
@@ -62,13 +71,13 @@ class ServicioTallerRepository {
     }
   }
 
-  // Obtener servicios por categoria
+  // Obtener servicios por categoria (Global)
   Future<List<ServicioTaller>> getByCategoria(
     CategoriaSerivicioTaller categoria,
   ) async {
     try {
       final querySnapshot = await _firestore
-          .collection(_collection)
+          .collectionGroup(_collection)
           .where('categoria', isEqualTo: categoria.value)
           .get();
       return querySnapshot.docs
@@ -85,11 +94,9 @@ class ServicioTallerRepository {
     CategoriaSerivicioTaller categoria,
   ) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('uidTaller', isEqualTo: uidTaller)
-          .where('categoria', isEqualTo: categoria.value)
-          .get();
+      final querySnapshot = await _getTallerServiciosRef(
+        uidTaller,
+      ).where('categoria', isEqualTo: categoria.value).get();
       return querySnapshot.docs
           .map((doc) => ServicioTaller.fromFirestore(doc))
           .toList();
@@ -98,10 +105,10 @@ class ServicioTallerRepository {
     }
   }
 
-  // Obtener todos los servicios
+  // Obtener todos los servicios (Global)
   Future<List<ServicioTaller>> getAll() async {
     try {
-      final querySnapshot = await _firestore.collection(_collection).get();
+      final querySnapshot = await _firestore.collectionGroup(_collection).get();
       return querySnapshot.docs
           .map((doc) => ServicioTaller.fromFirestore(doc))
           .toList();
@@ -110,11 +117,11 @@ class ServicioTallerRepository {
     }
   }
 
-  // Buscar servicios por nombre
+  // Buscar servicios por nombre (Global)
   Future<List<ServicioTaller>> searchByNombre(String nombre) async {
     try {
       final querySnapshot = await _firestore
-          .collection(_collection)
+          .collectionGroup(_collection)
           .where('nombre', isGreaterThanOrEqualTo: nombre)
           .where('nombre', isLessThanOrEqualTo: '$nombre\uf8ff')
           .get();
@@ -129,21 +136,26 @@ class ServicioTallerRepository {
   // Actualizar servicio
   Future<void> update(String uid, ServicioTaller servicio) async {
     try {
-      await _firestore
-          .collection(_collection)
-          .doc(uid)
-          .update(servicio.toFirestore());
+      await _getTallerServiciosRef(
+        servicio.uidTaller,
+      ).doc(uid).update(servicio.toFirestore());
     } catch (e) {
       throw Exception('Error al actualizar servicio: $e');
     }
   }
 
-  // Actualizar precio
+  // Actualizar precio (Requiere búsqueda global si no se tiene uidTaller)
   Future<void> updatePrecio(String uid, double precio) async {
     try {
-      await _firestore.collection(_collection).doc(uid).update({
-        'precio': precio,
-      });
+      final querySnapshot = await _firestore
+          .collectionGroup(_collection)
+          .where(FieldPath.documentId, isEqualTo: uid)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        await querySnapshot.docs.first.reference.update({'precio': precio});
+      }
     } catch (e) {
       throw Exception('Error al actualizar precio: $e');
     }
@@ -152,7 +164,15 @@ class ServicioTallerRepository {
   // Eliminar servicio (cambiar estado)
   Future<void> delete(String uid) async {
     try {
-      await _firestore.collection(_collection).doc(uid).update({'estado': 0});
+      final querySnapshot = await _firestore
+          .collectionGroup(_collection)
+          .where(FieldPath.documentId, isEqualTo: uid)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        await querySnapshot.docs.first.reference.update({'estado': 0});
+      }
     } catch (e) {
       throw Exception('Error al eliminar servicio: $e');
     }
@@ -161,7 +181,15 @@ class ServicioTallerRepository {
   // Activar servicio
   Future<void> activate(String uid) async {
     try {
-      await _firestore.collection(_collection).doc(uid).update({'estado': 1});
+      final querySnapshot = await _firestore
+          .collectionGroup(_collection)
+          .where(FieldPath.documentId, isEqualTo: uid)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        await querySnapshot.docs.first.reference.update({'estado': 1});
+      }
     } catch (e) {
       throw Exception('Error al activar servicio: $e');
     }

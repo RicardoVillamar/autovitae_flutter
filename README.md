@@ -48,6 +48,12 @@ Actualmente tenemos un archivo `.env-template` copie el archivo y cambie el nomb
 
 ejemplo del contenido del archivo `.env`
 
+### Generar el Report del Gradlew
+
+```
+  cd android && ./gradlew signingReport
+```
+
 ### Modulos
 
 - auth: Modulo de autenticacion de usuarios []

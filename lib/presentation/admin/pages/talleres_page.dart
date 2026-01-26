@@ -45,7 +45,6 @@ class _TalleresPageState extends State<TalleresPage> {
     }
   }
 
-  // Navegacion Create
   Future<void> _navigateToCreateTaller() async {
     final result = await Navigator.of(context).pushNamed('/create_taller');
     
@@ -54,7 +53,6 @@ class _TalleresPageState extends State<TalleresPage> {
     }
   }
 
-  // Navegacion Edit
   Future<void> _navigateToEditTaller(Taller taller) async {
     final result = await Navigator.of(context).pushNamed(
       '/edit_taller',
@@ -180,7 +178,7 @@ class _TalleresPageState extends State<TalleresPage> {
                         size: 28,
                       ),
                       leadingBackgroundColor: isActive
-                          ? AppColors.success.withOpacity(0.2) // Un toque de color de fondo
+                          ? AppColors.success.withOpacity(0.2)
                           : AppColors.grey.withOpacity(0.2),
                       title: taller.nombre,
                       subtitle: '${taller.direccion}\nTel: ${taller.telefono}',

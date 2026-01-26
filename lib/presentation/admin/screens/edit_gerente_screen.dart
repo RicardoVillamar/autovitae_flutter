@@ -10,7 +10,6 @@ import 'package:autovitae/core/utils/validators.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
 
 class EditGerenteScreen extends StatefulWidget {
-  // Ahora es constante y no requiere el objeto en el constructor
   const EditGerenteScreen({super.key});
 
   @override
@@ -24,7 +23,6 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
   final _cloudinaryService = CloudinaryService();
   final ImagePicker _picker = ImagePicker();
 
-  // Variables de estado
   late Gerente _gerente; 
   bool _isInitialized = false;
   File? _imageFile;
@@ -32,7 +30,6 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
   bool _isUploading = false;
   bool _isLoadingData = true;
 
-  // Controladores
   final _cedulaController = TextEditingController();
   final _nombreController = TextEditingController();
   final _apellidoController = TextEditingController();
@@ -42,14 +39,12 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Capturamos el argumento de la ruta una sola vez
     if (!_isInitialized) {
       final args = ModalRoute.of(context)!.settings.arguments;
       if (args is Gerente) {
         _gerente = args;
         _loadGerenteData();
       } else {
-        // Si no hay argumentos válidos, cerramos la pantalla
         Navigator.of(context).pop();
       }
       _isInitialized = true;
@@ -99,12 +94,10 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
       String? imageUrl = _currentImageUrl;
 
       try {
-        // 1. Si hay nueva imagen, subirla a Cloudinary
         if (_imageFile != null) {
           imageUrl = await _cloudinaryService.uploadImage(_imageFile!);
         }
 
-        // 2. Actualizar el perfil completo mediante el ViewModel
         final success = await _viewModel.actualizarPerfilCompleto(
           uidUsuario: _gerente.uidUsuario!,
           nombres: _nombreController.text,
@@ -115,7 +108,7 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
         );
 
         if (mounted && success) {
-          Navigator.of(context).pop(true); // Retornamos true para refrescar la lista
+          Navigator.of(context).pop(true);
         } else if (mounted && _viewModel.error != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: ${_viewModel.error}')),
@@ -212,7 +205,6 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
       children: [
         _buildSectionHeader(Icons.badge_outlined, 'Datos de Identidad'),
         _buildFormCard([
-          // Campo de cédula bloqueado (no se debe cambiar el ID único)
           Opacity(
             opacity: 0.6,
             child: AbsorbPointer(

@@ -34,7 +34,6 @@ class GerenteViewModel {
     _isLoading = true;
     _error = null;
     try {
-      // 1. Crear el usuario en Firebase Authentication
       final authResult = await _authRepository.registerWithEmailPassword(
         email: email,
         password: password,
@@ -42,7 +41,6 @@ class GerenteViewModel {
 
       final String uidUsuario = authResult.user!.uid;
 
-      // 2. Crear el perfil en la colección 'usuarios'
       final usuario = Usuario(
         uidUsuario: uidUsuario,
         cedula: cedula,
@@ -52,7 +50,7 @@ class GerenteViewModel {
         telefono: telefono,
         rol: RolUsuario.gerente,
         estado: 1,
-        fotoUrl: fotoUrl, // <--- CORREGIDO: Debe ser fotoUrl como en tu modelo
+        fotoUrl: fotoUrl, 
       );
 
       await _firestore
@@ -60,14 +58,12 @@ class GerenteViewModel {
           .doc(uidUsuario)
           .set(usuario.toFirestore());
 
-      // 3. Crear el perfil en la colección 'gerente'
       final gerente = Gerente(
         uidGerente: uidUsuario, 
         uidUsuario: uidUsuario,
         uidTaller: null,
         primerLogin: true,
         estado: 1,
-        // CORREGIDO: Convertimos DateTime a int usando millisecondsSinceEpoch
         fechaAsignacion: DateTime.now().millisecondsSinceEpoch,
       );
 
@@ -130,7 +126,7 @@ class GerenteViewModel {
     }
   }
 
-  // --- GESTIÓN DE TALLERES ---
+  // --- TALLERES ---
 
   Future<bool> asignarTaller(String uidGerente, String uidTaller) async {
     _isLoading = true;
@@ -144,7 +140,6 @@ class GerenteViewModel {
           uidTaller: uidTaller,
           estado: gerente.estado,
           primerLogin: gerente.primerLogin,
-          // CORREGIDO: Pasar int en lugar de DateTime
           fechaAsignacion: DateTime.now().millisecondsSinceEpoch,
         );
         await _gerenteRepository.update(uidGerente, gerenteActualizado);
@@ -171,7 +166,7 @@ class GerenteViewModel {
           uidTaller: null,
           estado: gerente.estado,
           primerLogin: gerente.primerLogin,
-          fechaAsignacion: null, // El modelo permite nulo
+          fechaAsignacion: null,
         );
         await _gerenteRepository.update(uidGerente, gerenteActualizado);
         await _updateLocalSession(uidGerente);
@@ -185,8 +180,7 @@ class GerenteViewModel {
     }
   }
 
-  // --- OPERACIONES CRUD ---
-
+  // CRUD 
   Future<bool> actualizarGerente(String uid, Gerente gerente) async {
     _isLoading = true;
     _error = null;

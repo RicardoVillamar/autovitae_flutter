@@ -37,14 +37,11 @@ Future<void> _changePassword() async {
   setState(() => _isLoading = true);
 
   try {
-    // 1. Cambiar clave
     await _viewModel.changePassword(
       _currentPasswordController.text,
       _newPasswordController.text,
     );
 
-    // 2. ACTUALIZAR BASE DE DATOS (Este es el paso que te está fallando)
-    // Aquí el ViewModel llama al Repository -> GerenteRepository -> Firestore
     final success = await _viewModel.updatePrimerLoginGerente();
     
     if (!success) {
@@ -53,11 +50,9 @@ Future<void> _changePassword() async {
 
     if (!mounted) return;
 
-    // 3. Navegar
     Navigator.of(context).pushNamedAndRemoveUntil('/home_gerent', (r) => false);
   } catch (e) {
     setState(() => _isLoading = false);
-    // Mostrar error...
   }
 }
 
@@ -94,7 +89,6 @@ Future<void> _changePassword() async {
               ),
               const SizedBox(height: 32),
               
-              // Campo: Contraseña Actual
               TextFormField(
                 controller: _currentPasswordController,
                 obscureText: _obscureCurrentPassword,
@@ -108,7 +102,6 @@ Future<void> _changePassword() async {
               ),
               const SizedBox(height: 16),
 
-              // Campo: Nueva Contraseña
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: _obscureNewPassword,
@@ -122,7 +115,6 @@ Future<void> _changePassword() async {
               ),
               const SizedBox(height: 16),
 
-              // Campo: Confirmar Contraseña
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirmPassword,

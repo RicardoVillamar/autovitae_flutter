@@ -87,22 +87,22 @@ class LoginPageModel {
     }
   }
 
-  // Actualizar primer login del gerente
-  Future<bool> updatePrimerLoginGerente() async {
-    _error = null;
-    try {
-      final session = await SessionManager().getSession();
-      final gerente = session['gerente'] as Gerente?;
-      if (gerente?.uidGerente != null) {
-        await _authRepository.updatePrimerLoginGerente(
-          gerente!.uidGerente!,
-          false,
-        );
-      }
-      return true;
-    } catch (e) {
-      _error = e.toString();
-      return false;
-    }
+ // En LoginPageModel
+Future<bool> updatePrimerLoginGerente() async {
+  _error = null;
+  try {
+    // 1. Obtenemos el usuario actual de Firebase Auth
+    final user = _authRepository.currentUser;
+    if (user == null) return false;
+
+    // 2. Llamamos al repositorio. 
+    // Pasamos el user.uid porque el repositorio lo usa para buscar al gerente.
+    await _authRepository.updatePrimerLoginGerente(user.uid, false);
+    
+    return true;
+  } catch (e) {
+    _error = e.toString();
+    return false;
   }
+}
 }

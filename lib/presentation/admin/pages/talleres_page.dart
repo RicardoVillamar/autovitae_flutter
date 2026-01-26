@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:autovitae/data/models/taller.dart';
-import 'package:autovitae/viewmodels/taller_viewmodel.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/core/theme/app_fonts.dart';
+import 'package:autovitae/data/models/taller.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/generic_list_tile.dart';
+import 'package:autovitae/viewmodels/taller_viewmodel.dart';
+import 'package:flutter/material.dart';
 
 class TalleresPage extends StatefulWidget {
   const TalleresPage({super.key});
@@ -45,17 +45,22 @@ class _TalleresPageState extends State<TalleresPage> {
     }
   }
 
+  // Navegacion Create
   Future<void> _navigateToCreateTaller() async {
     final result = await Navigator.of(context).pushNamed('/create_taller');
+    
     if (result == true) {
       _loadTalleres();
     }
   }
 
+  // Navegacion Edit
   Future<void> _navigateToEditTaller(Taller taller) async {
-    final result = await Navigator.of(
-      context,
-    ).pushNamed('/edit_taller', arguments: taller);
+    final result = await Navigator.of(context).pushNamed(
+      '/edit_taller',
+      arguments: taller,
+    );
+
     if (result == true) {
       _loadTalleres();
     }
@@ -175,8 +180,8 @@ class _TalleresPageState extends State<TalleresPage> {
                         size: 28,
                       ),
                       leadingBackgroundColor: isActive
-                          ? AppColors.success
-                          : AppColors.grey,
+                          ? AppColors.success.withOpacity(0.2) // Un toque de color de fondo
+                          : AppColors.grey.withOpacity(0.2),
                       title: taller.nombre,
                       subtitle: '${taller.direccion}\nTel: ${taller.telefono}',
                       isThreeLine: true,
@@ -186,10 +191,7 @@ class _TalleresPageState extends State<TalleresPage> {
                             value: 'edit',
                             child: Row(
                               children: [
-                                Icon(
-                                  Icons.edit,
-                                  color: AppColors.primaryColor,
-                                ),
+                                Icon(Icons.edit, color: AppColors.primaryColor),
                                 const SizedBox(width: 8),
                                 const Text('Editar'),
                               ],
@@ -201,9 +203,7 @@ class _TalleresPageState extends State<TalleresPage> {
                               children: [
                                 Icon(
                                   isActive ? Icons.delete : Icons.check,
-                                  color: isActive
-                                      ? AppColors.error
-                                      : AppColors.success,
+                                  color: isActive ? AppColors.error : AppColors.success,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(isActive ? 'Desactivar' : 'Activar'),

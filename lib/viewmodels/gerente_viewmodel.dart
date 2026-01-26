@@ -3,11 +3,15 @@ import 'package:autovitae/data/models/usuario.dart';
 import 'package:autovitae/data/models/rol_usuario.dart';
 import 'package:autovitae/data/repositories/gerente_repository.dart';
 import 'package:autovitae/data/repositories/usuario_repository.dart';
+import 'package:autovitae/data/repositories/auth_repository.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GerenteViewModel {
   final GerenteRepository _gerenteRepository = GerenteRepository();
   final UsuarioRepository _usuarioRepository = UsuarioRepository();
+  final AuthRepository _authRepository = AuthRepository();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -18,7 +22,6 @@ class GerenteViewModel {
   String? _error;
   String? get error => _error;
 
-  // Registrar gerente (Usuario + Gerente)
   Future<bool> registrarGerente({
     required String cedula,
     required String nombres,
@@ -26,13 +29,22 @@ class GerenteViewModel {
     required String email,
     required String telefono,
     required String password,
+    String? fotoUrl,
   }) async {
     _isLoading = true;
     _error = null;
     try {
-      // Crear usuario
+      // 1. Crear el usuario en Firebase Authentication
+      final authResult = await _authRepository.registerWithEmailPassword(
+        email: email,
+        password: password,
+      );
+
+      final String uidUsuario = authResult.user!.uid;
+
+      // 2. Crear el perfil en la colección 'usuarios'
       final usuario = Usuario(
-        uidUsuario: null,
+        uidUsuario: uidUsuario,
         cedula: cedula,
         nombre: nombres,
         apellido: apellidos,
@@ -40,20 +52,30 @@ class GerenteViewModel {
         telefono: telefono,
         rol: RolUsuario.gerente,
         estado: 1,
+        fotoUrl: fotoUrl, // <--- CORREGIDO: Debe ser fotoUrl como en tu modelo
       );
 
-      final uidUsuario = await _usuarioRepository.create(usuario);
+      await _firestore
+          .collection('usuarios')
+          .doc(uidUsuario)
+          .set(usuario.toFirestore());
 
-      // Crear gerente sin taller asignado
+      // 3. Crear el perfil en la colección 'gerente'
       final gerente = Gerente(
-        uidGerente: null,
+        uidGerente: uidUsuario, 
         uidUsuario: uidUsuario,
         uidTaller: null,
         primerLogin: true,
         estado: 1,
+        // CORREGIDO: Convertimos DateTime a int usando millisecondsSinceEpoch
+        fechaAsignacion: DateTime.now().millisecondsSinceEpoch,
       );
 
-      await _gerenteRepository.create(gerente);
+      await _firestore
+          .collection('gerente') 
+          .doc(uidUsuario)
+          .set(gerente.toFirestore());
+
       return true;
     } catch (e) {
       _error = e.toString();
@@ -63,7 +85,8 @@ class GerenteViewModel {
     }
   }
 
-  // Cargar todos los gerentes
+  // --- MÉTODOS DE CARGA ---
+
   Future<void> cargarGerentes() async {
     _isLoading = true;
     _error = null;
@@ -77,7 +100,6 @@ class GerenteViewModel {
     }
   }
 
-  // Cargar gerentes activos
   Future<void> cargarGerentesActivos() async {
     _isLoading = true;
     _error = null;
@@ -92,7 +114,6 @@ class GerenteViewModel {
     }
   }
 
-  // Cargar gerentes sin taller asignado
   Future<void> cargarGerentesSinTaller() async {
     _isLoading = true;
     _error = null;
@@ -109,35 +130,8 @@ class GerenteViewModel {
     }
   }
 
-  // Cargar gerente por ID
-  Future<Gerente?> cargarGerente(String uidGerente) async {
-    _isLoading = true;
-    _error = null;
-    try {
-      return await _gerenteRepository.getById(uidGerente);
-    } catch (e) {
-      _error = e.toString();
-      return null;
-    } finally {
-      _isLoading = false;
-    }
-  }
+  // --- GESTIÓN DE TALLERES ---
 
-  // Cargar gerente por taller
-  Future<Gerente?> cargarGerentePorTaller(String uidTaller) async {
-    _isLoading = true;
-    _error = null;
-    try {
-      return await _gerenteRepository.getByTallerId(uidTaller);
-    } catch (e) {
-      _error = e.toString();
-      return null;
-    } finally {
-      _isLoading = false;
-    }
-  }
-
-  // Asignar taller a gerente
   Future<bool> asignarTaller(String uidGerente, String uidTaller) async {
     _isLoading = true;
     _error = null;
@@ -150,20 +144,12 @@ class GerenteViewModel {
           uidTaller: uidTaller,
           estado: gerente.estado,
           primerLogin: gerente.primerLogin,
-          fechaAsignacion: gerente.fechaAsignacion,
+          // CORREGIDO: Pasar int en lugar de DateTime
+          fechaAsignacion: DateTime.now().millisecondsSinceEpoch,
         );
         await _gerenteRepository.update(uidGerente, gerenteActualizado);
+        await _updateLocalSession(uidGerente);
       }
-
-      // Actualizar sesión si es el gerente logueado
-      final session = await SessionManager().getSession();
-      if (session['gerente']?['uidGerente'] == uidGerente) {
-        final gerenteActualizado = await _gerenteRepository.getById(uidGerente);
-        if (gerenteActualizado != null) {
-          await SessionManager().updateSession(gerente: gerenteActualizado);
-        }
-      }
-
       return true;
     } catch (e) {
       _error = e.toString();
@@ -173,7 +159,6 @@ class GerenteViewModel {
     }
   }
 
-  // Remover taller de gerente
   Future<bool> removerTaller(String uidGerente) async {
     _isLoading = true;
     _error = null;
@@ -186,20 +171,11 @@ class GerenteViewModel {
           uidTaller: null,
           estado: gerente.estado,
           primerLogin: gerente.primerLogin,
-          fechaAsignacion: gerente.fechaAsignacion,
+          fechaAsignacion: null, // El modelo permite nulo
         );
         await _gerenteRepository.update(uidGerente, gerenteActualizado);
+        await _updateLocalSession(uidGerente);
       }
-
-      // Actualizar sesión si es el gerente logueado
-      final session = await SessionManager().getSession();
-      if (session['gerente']?['uidGerente'] == uidGerente) {
-        final gerenteActualizado = await _gerenteRepository.getById(uidGerente);
-        if (gerenteActualizado != null) {
-          await SessionManager().updateSession(gerente: gerenteActualizado);
-        }
-      }
-
       return true;
     } catch (e) {
       _error = e.toString();
@@ -209,19 +185,14 @@ class GerenteViewModel {
     }
   }
 
-  // Actualizar gerente
+  // --- OPERACIONES CRUD ---
+
   Future<bool> actualizarGerente(String uid, Gerente gerente) async {
     _isLoading = true;
     _error = null;
     try {
       await _gerenteRepository.update(uid, gerente);
-
-      // Actualizar sesión si es el gerente logueado
-      final session = await SessionManager().getSession();
-      if (session['gerente']?['uid'] == uid) {
-        await SessionManager().updateSession(gerente: gerente);
-      }
-
+      await _updateLocalSession(uid);
       return true;
     } catch (e) {
       _error = e.toString();
@@ -231,7 +202,6 @@ class GerenteViewModel {
     }
   }
 
-  // Eliminar gerente (desactivar)
   Future<bool> eliminarGerente(String uid) async {
     _isLoading = true;
     _error = null;
@@ -246,7 +216,6 @@ class GerenteViewModel {
     }
   }
 
-  // Activar gerente
   Future<bool> activarGerente(String uid) async {
     _isLoading = true;
     _error = null;
@@ -261,7 +230,44 @@ class GerenteViewModel {
     }
   }
 
-  void clearError() {
-    _error = null;
+  // --- UTILIDADES ---
+
+  Future<void> _updateLocalSession(String uidGerente) async {
+    final session = await SessionManager().getSession();
+    if (session['gerente'] != null && session['gerente']['uidGerente'] == uidGerente) {
+      final updatedData = await _gerenteRepository.getById(uidGerente);
+      if (updatedData != null) {
+        await SessionManager().updateSession(gerente: updatedData);
+      }
+    }
   }
+
+  Future<bool> actualizarPerfilCompleto({
+    required String uidUsuario,
+    required String nombres,
+    required String apellidos,
+    required String email,
+    required String telefono,
+    String? fotoUrl,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    try {
+      await _firestore.collection('usuarios').doc(uidUsuario).update({
+        'nombre': nombres,
+        'apellido': apellidos,
+        'correo': email,
+        'telefono': telefono,
+        if (fotoUrl != null) 'fotoUrl': fotoUrl,
+      });
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  void clearError() => _error = null;
 }

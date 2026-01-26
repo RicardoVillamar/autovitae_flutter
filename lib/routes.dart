@@ -1,3 +1,7 @@
+import 'package:autovitae/presentation/admin/screens/create_gerente_screen.dart';
+import 'package:autovitae/presentation/admin/screens/create_taller_screen.dart';
+import 'package:autovitae/presentation/admin/screens/edit_gerente_screen.dart';
+import 'package:autovitae/presentation/admin/screens/edit_taller_screen.dart';
 import 'package:autovitae/presentation/auth/pages/login_page.dart';
 import 'package:autovitae/presentation/auth/pages/register_page.dart';
 import 'package:autovitae/presentation/auth/pages/change_password_page.dart';
@@ -16,4 +20,9 @@ final Map<String, WidgetBuilder> routes = {
   '/home_client': (context) => const HomeClientScreen(),
   '/home_gerent': (context) => const HomeManagerScreen(),
   '/talleres_cliente': (context) => const TalleresDisponiblesScreen(),
+  
+  '/create_taller': (context) => const CreateTallerScreen(),
+  '/edit_taller': (context) => const EditTallerScreen(),
+  '/create_gerente': (context) => const CreateGerenteScreen(),
+  '/edit_gerente': (context) => const EditGerenteScreen(),
 };

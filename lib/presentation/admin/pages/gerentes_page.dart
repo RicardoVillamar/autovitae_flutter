@@ -5,7 +5,6 @@ import 'package:autovitae/data/repositories/usuario_repository.dart';
 import 'package:autovitae/data/repositories/taller_repository.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/core/theme/app_fonts.dart';
-import 'package:autovitae/presentation/shared/widgets/cards/generic_list_tile.dart';
 
 class GerentesPage extends StatefulWidget {
   const GerentesPage({super.key});
@@ -39,29 +38,24 @@ class _GerentesPageState extends State<GerentesPage> {
 
   Future<void> _navigateToCreateGerente() async {
     final result = await Navigator.of(context).pushNamed('/create_gerente');
-    if (result == true) {
-      _loadGerentes();
-    }
+    if (result == true) _loadGerentes();
   }
 
   Future<void> _navigateToEditGerente(Gerente gerente) async {
-    final result = await Navigator.of(
-      context,
-    ).pushNamed('/edit_gerente', arguments: gerente);
-    if (result == true) {
-      _loadGerentes();
-    }
+  final result = await Navigator.of(context).pushNamed(
+    '/edit_gerente',
+    arguments: gerente,
+  );
+  if (result == true) _loadGerentes();
   }
+
 
   Future<void> _showAssignTallerDialog(Gerente gerente) async {
     final talleres = await _tallerRepository.getActive();
-
     if (!mounted) return;
 
     if (talleres.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No hay talleres disponibles')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No hay talleres disponibles')));
       return;
     }
 
@@ -84,34 +78,12 @@ class _GerentesPageState extends State<GerentesPage> {
             },
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
-          ),
-        ],
       ),
     );
 
     if (selectedTaller != null && mounted) {
-      final success = await _viewModel.asignarTaller(
-        gerente.uidGerente!,
-        selectedTaller,
-      );
-      if (mounted) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Taller asignado exitosamente')),
-          );
-          _loadGerentes();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_viewModel.error ?? 'Error al asignar taller'),
-            ),
-          );
-        }
-      }
+      final success = await _viewModel.asignarTaller(gerente.uidGerente!, selectedTaller);
+      if (success) _loadGerentes();
     }
   }
 
@@ -120,86 +92,39 @@ class _GerentesPageState extends State<GerentesPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Remover Taller'),
-        content: const Text(
-          '¿Estás seguro de que deseas remover el taller asignado?',
-        ),
+        content: const Text('¿Estás seguro de que deseas remover el taller asignado?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Remover'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remover')),
         ],
       ),
     );
 
-    if (confirm == true && mounted) {
+    if (confirm == true) {
       final success = await _viewModel.removerTaller(gerente.uidGerente!);
-      if (mounted) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Taller removido exitosamente')),
-          );
-          _loadGerentes();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_viewModel.error ?? 'Error al remover taller'),
-            ),
-          );
-        }
-      }
+      if (success) _loadGerentes();
     }
   }
 
   Future<void> _toggleGerenteStatus(Gerente gerente) async {
     final action = gerente.estado == 1 ? 'desactivar' : 'activar';
-    final usuario = await _usuarioRepository.getById(gerente.uidUsuario!);
-
-    if (!mounted) return;
-
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('¿$action gerente?'),
-        content: Text(
-          '¿Estás seguro de que deseas $action a ${usuario?.nombre ?? 'este gerente'}?',
-        ),
+        title: Text('¿${action[0].toUpperCase()}${action.substring(1)} gerente?'),
+        content: Text('¿Estás seguro de que deseas $action a este gerente?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(action.toUpperCase()),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(action.toUpperCase())),
         ],
       ),
     );
 
-    if (confirm == true && mounted) {
-      final success = gerente.estado == 1
-          ? await _viewModel.eliminarGerente(gerente.uidGerente!)
+    if (confirm == true) {
+      final success = gerente.estado == 1 
+          ? await _viewModel.eliminarGerente(gerente.uidGerente!) 
           : await _viewModel.activarGerente(gerente.uidGerente!);
-
-      if (mounted) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Gerente ${action}do exitosamente')),
-          );
-          _loadGerentes();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_viewModel.error ?? 'Error al $action gerente'),
-            ),
-          );
-        }
-      }
+      if (success) _loadGerentes();
     }
   }
 
@@ -215,6 +140,7 @@ class _GerentesPageState extends State<GerentesPage> {
                 child: SwitchListTile(
                   title: Text('Solo sin taller', style: AppTextStyles.bodyText),
                   value: _showOnlySinTaller,
+                  activeColor: AppColors.primaryColor,
                   onChanged: (value) {
                     setState(() => _showOnlySinTaller = value);
                     _loadGerentes();
@@ -232,137 +158,139 @@ class _GerentesPageState extends State<GerentesPage> {
         ),
         Expanded(
           child: _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
+              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
               : _viewModel.gerentes.isEmpty
-              ? Center(
-                  child: Text(
-                    _showOnlySinTaller
-                        ? 'No hay gerentes sin taller'
-                        : 'No hay gerentes registrados',
-                    style: AppTextStyles.bodyText,
-                  ),
-                )
-              : ListView.builder(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    bottom: kBottomNavigationBarHeight + 16,
-                  ),
-                  itemCount: _viewModel.gerentes.length,
-                  itemBuilder: (context, index) {
-                    final gerente = _viewModel.gerentes[index];
-                    return FutureBuilder(
-                      future: Future.wait([
-                        _usuarioRepository.getById(gerente.uidUsuario!),
-                        gerente.uidTaller != null
-                            ? _tallerRepository.getById(gerente.uidTaller!)
-                            : Future.value(null),
-                      ]),
-                      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                        if (!snapshot.hasData) {
-                          return const SizedBox.shrink();
-                        }
+                  ? Center(child: Text(_showOnlySinTaller ? 'No hay gerentes sin taller' : 'No hay gerentes registrados'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: _viewModel.gerentes.length,
+                      itemBuilder: (context, index) {
+                        final gerente = _viewModel.gerentes[index];
+                        return FutureBuilder(
+                          future: Future.wait([
+                            _usuarioRepository.getById(gerente.uidUsuario!),
+                            gerente.uidTaller != null ? _tallerRepository.getById(gerente.uidTaller!) : Future.value(null),
+                          ]),
+                          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                            if (!snapshot.hasData) return const SizedBox(height: 100);
 
-                        final usuario = snapshot.data![0];
-                        final taller = snapshot.data![1];
-                        final isActive = gerente.estado == 1;
+                            final usuario = snapshot.data![0];
+                            final taller = snapshot.data![1];
+                            final isActive = gerente.estado == 1;
+                            final String? fotoUrl = usuario?.fotoUrl;
 
-                        return GenericListTile(
-                          leadingIcon: Icon(
-                            Icons.person,
-                            color: isActive
-                                ? AppColors.secondaryColor
-                                : AppColors.grey,
-                            size: 28,
-                          ),
-                          leadingBackgroundColor: isActive
-                              ? AppColors.secondaryColor
-                              : AppColors.grey,
-                          title:
-                              '${usuario?.nombre ?? ''} ${usuario?.apellido ?? ''}',
-                          subtitle:
-                              '${usuario?.correo ?? ''}\n${taller != null ? 'Taller: ${taller.nombre}' : 'Sin taller asignado'}',
-                          isThreeLine: true,
-                          trailing: PopupMenuButton(
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'edit',
+                            return Card(
+                              elevation: 2,
+                              margin: const EdgeInsets.only(bottom: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      Icons.edit,
-                                      color: AppColors.primaryColor,
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundColor: (fotoUrl != null && fotoUrl.isNotEmpty) 
+                                          ? Colors.transparent 
+                                          : (isActive ? AppColors.secondaryColor.withOpacity(0.1) : AppColors.grey.withOpacity(0.1)),
+                                      backgroundImage: (fotoUrl != null && fotoUrl.isNotEmpty) 
+                                          ? NetworkImage(fotoUrl) 
+                                          : null,
+                                      child: (fotoUrl == null || fotoUrl.isEmpty)
+                                          ? Icon(Icons.person, color: isActive ? AppColors.secondaryColor : AppColors.grey, size: 30)
+                                          : null,
                                     ),
-                                    const SizedBox(width: 8),
-                                    const Text('Editar'),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${usuario?.nombre ?? ''} ${usuario?.apellido ?? ''}',
+                                            style: AppTextStyles.headline1.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            usuario?.correo ?? '', 
+                                            style: AppTextStyles.bodyText.copyWith(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.normal,
+                                            )
+                                          ),
+                                          Text(
+                                            taller != null ? 'Taller: ${taller.nombre}' : 'Sin taller asignado',
+                                            style: AppTextStyles.bodyText.copyWith(
+                                              color: taller != null ? AppColors.secondaryColor : Colors.orange,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuButton(
+                                      icon: const Icon(Icons.more_vert),
+                                      onSelected: (value) {
+                                        if (value == 'edit') _navigateToEditGerente(gerente);
+                                        if (value == 'assign') _showAssignTallerDialog(gerente);
+                                        if (value == 'remove') _removeGerenteTaller(gerente);
+                                        if (value == 'toggle') _toggleGerenteStatus(gerente);
+                                      },
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          value: 'edit',
+                                          child: Row(
+                                            children: const [
+                                              Icon(Icons.edit, size: 20, color: Colors.blue),
+                                              SizedBox(width: 12),
+                                              Text('Editar'),
+                                            ],
+                                          ),
+                                        ),
+                                        if (gerente.uidTaller == null)
+                                          PopupMenuItem(
+                                            value: 'assign',
+                                            child: Row(
+                                              children: const [
+                                                Icon(Icons.assignment_ind, size: 20, color: Colors.green),
+                                                SizedBox(width: 12),
+                                                Text('Asignar Taller'),
+                                              ],
+                                            ),
+                                          ),
+                                        if (gerente.uidTaller != null)
+                                          PopupMenuItem(
+                                            value: 'remove',
+                                            child: Row(
+                                              children: const [
+                                                Icon(Icons.assignment_late, size: 20, color: Colors.orange),
+                                                SizedBox(width: 12),
+                                                Text('Remover Taller'),
+                                              ],
+                                            ),
+                                          ),
+                                        PopupMenuItem(
+                                          value: 'toggle',
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                isActive ? Icons.block : Icons.check_circle_outline,
+                                                size: 20,
+                                                color: isActive ? Colors.red : Colors.green,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(isActive ? 'Desactivar' : 'Activar'),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
-                              if (gerente.uidTaller == null)
-                                PopupMenuItem(
-                                  value: 'assign',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.assignment,
-                                        color: AppColors.secondaryColor,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      const Text('Asignar Taller'),
-                                    ],
-                                  ),
-                                ),
-                              if (gerente.uidTaller != null)
-                                PopupMenuItem(
-                                  value: 'remove',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.remove_circle,
-                                        color: AppColors.warning,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      const Text('Remover Taller'),
-                                    ],
-                                  ),
-                                ),
-                              PopupMenuItem(
-                                value: 'toggle',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      isActive ? Icons.delete : Icons.check,
-                                      color: isActive
-                                          ? AppColors.error
-                                          : AppColors.success,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(isActive ? 'Desactivar' : 'Activar'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                _navigateToEditGerente(gerente);
-                              } else if (value == 'assign') {
-                                _showAssignTallerDialog(gerente);
-                              } else if (value == 'remove') {
-                                _removeGerenteTaller(gerente);
-                              } else if (value == 'toggle') {
-                                _toggleGerenteStatus(gerente);
-                              }
-                            },
-                          ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
         ),
       ],
     );

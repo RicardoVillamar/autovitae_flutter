@@ -146,7 +146,7 @@ Future<void> _changePassword() async {
                         height: 20, width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
                       )
-                    : const Text('Actualizar y Entrar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    : const Text('Cambiar Contraseña', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ],
           ),

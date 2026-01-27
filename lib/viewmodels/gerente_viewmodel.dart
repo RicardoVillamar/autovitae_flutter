@@ -110,6 +110,19 @@ class GerenteViewModel {
     }
   }
 
+  Future<Gerente?> cargarGerentePorTaller(String uidTaller) async {
+    _isLoading = true;
+    _error = null;
+    try {
+      return await _gerenteRepository.getByTallerId(uidTaller);
+    } catch (e) {
+      _error = e.toString();
+      return null;
+    } finally {
+      _isLoading = false;
+    }
+  }
+
   Future<void> cargarGerentesSinTaller() async {
     _isLoading = true;
     _error = null;

@@ -48,14 +48,16 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.primaryColor.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+          CircleAvatar(
+            radius: 60,
+            backgroundColor: AppColors.primaryColor.withAlpha(25),
+            backgroundImage: _usuario?.fotoUrl != null
+            ? NetworkImage(_usuario!.fotoUrl!)
+            : null,
+            child: _usuario?.fotoUrl == null
+            ? Icon(Icons.person, size: 60, color: AppColors.primaryColor) 
+            : null,
             ),
-            child: Icon(Icons.person, size: 60, color: AppColors.primaryColor),
-          ),
           const SizedBox(height: 24),
           Text(
             '${_usuario?.nombre ?? ''} ${_usuario?.apellido ?? ''}',

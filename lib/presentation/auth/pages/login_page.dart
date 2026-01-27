@@ -1,5 +1,6 @@
 import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/core/theme/app_fonts.dart';
+import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/presentation/shared/widgets/inputs/text_field_custom.dart';
 import 'package:autovitae/viewmodels/login_viewmodel.dart';
 import 'package:autovitae/data/models/rol_usuario.dart';
@@ -64,8 +65,22 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => _isLoading = false);
 
       if (authResult != null) {
-        _navigateByRole(authResult.rol, authResult.primerLoginGerente);
-      } else {
+        await SessionManager().saveSession(
+          usuario: authResult.usuario,
+          gerente: authResult.gerente,
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Inicio de sesión exitoso'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+          _navigateByRole(authResult.rol, authResult.primerLoginGerente);
+        }
+      }
+           else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(_viewModel.error ?? 'Error al iniciar sesión'),

@@ -51,13 +51,17 @@ class _ProfilePageState extends State<ProfilePage> {
           CircleAvatar(
             radius: 60,
             backgroundColor: AppColors.primaryColor.withAlpha(25),
-            backgroundImage: _usuario?.fotoUrl != null
+            backgroundImage: (_usuario?.fotoUrl != null && _usuario!.fotoUrl!.isNotEmpty)
             ? NetworkImage(_usuario!.fotoUrl!)
             : null,
-            child: _usuario?.fotoUrl == null
-            ? Icon(Icons.person, size: 60, color: AppColors.primaryColor) 
-            : null,
-            ),
+            child: (_usuario?.fotoUrl == null || _usuario!.fotoUrl!.isEmpty)
+            ? Icon(
+              Icons.person,
+              size: 60,
+              color: AppColors.primaryColor,
+              )
+              : null,
+              ),
           const SizedBox(height: 24),
           Text(
             '${_usuario?.nombre ?? ''} ${_usuario?.apellido ?? ''}',

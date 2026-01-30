@@ -4,7 +4,6 @@ import 'package:autovitae/data/models/servicio_taller.dart';
 import 'package:autovitae/data/models/categoria_serivicio_taller.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/data/repositories/taller_repository.dart';
 import 'package:autovitae/viewmodels/servicio_taller_viewmodel.dart';
 import 'package:autovitae/presentation/manager/screens/register_service_screen.dart';
@@ -54,6 +53,7 @@ class _WorkshopPageState extends State<WorkshopPage>
   }
 
   Future<void> _toggleServicioStatus(ServicioTaller servicio) async {
+    final colorScheme = Theme.of(context).colorScheme;
     final action = servicio.estado == 1 ? 'desactivar' : 'activar';
     final confirm = await showDialog<bool>(
       context: context,
@@ -95,7 +95,7 @@ class _WorkshopPageState extends State<WorkshopPage>
               content: Text(
                 _servicioViewModel.error ?? 'Error al $action servicio',
               ),
-              backgroundColor: AppColors.error,
+              backgroundColor: colorScheme.error,
             ),
           );
         }
@@ -122,6 +122,9 @@ class _WorkshopPageState extends State<WorkshopPage>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -131,16 +134,17 @@ class _WorkshopPageState extends State<WorkshopPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.store_mall_directory, size: 64, color: AppColors.grey),
+            const Icon(Icons.store_mall_directory,
+                size: 64, color: AppColors.grey),
             const SizedBox(height: 16),
             Text(
               'No tienes un taller asignado',
-              style: AppTextStyles.headline1,
+              style: textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
               'Contacta al administrador para asignar un taller',
-              style: AppTextStyles.caption,
+              style: textTheme.bodySmall,
             ),
           ],
         ),
@@ -150,12 +154,12 @@ class _WorkshopPageState extends State<WorkshopPage>
     return Column(
       children: [
         Container(
-          color: AppColors.background,
+          color: colorScheme.surface,
           child: TabBar(
             controller: _tabController,
-            labelColor: AppColors.primaryColor,
+            labelColor: colorScheme.primary,
             unselectedLabelColor: AppColors.grey,
-            indicatorColor: AppColors.primaryColor,
+            indicatorColor: colorScheme.primary,
             tabs: const [
               Tab(icon: Icon(Icons.info), text: 'Información'),
               Tab(icon: Icon(Icons.construction), text: 'Servicios'),
@@ -173,6 +177,9 @@ class _WorkshopPageState extends State<WorkshopPage>
   }
 
   Widget _buildTallerInfo() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -182,17 +189,17 @@ class _WorkshopPageState extends State<WorkshopPage>
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.1),
+                color: colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.store, size: 80, color: AppColors.primaryColor),
+              child: Icon(Icons.store, size: 80, color: colorScheme.primary),
             ),
           ),
           const SizedBox(height: 24),
           Center(
             child: Text(
               _taller!.nombre,
-              style: AppTextStyles.headline1,
+              style: textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
           ),
@@ -209,7 +216,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                 children: [
                   Text(
                     'Información del Taller',
-                    style: AppTextStyles.headline1,
+                    style: textTheme.headlineSmall,
                   ),
                   const Divider(height: 24),
                   _buildInfoRow(
@@ -228,7 +235,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                     _taller!.estado == 1 ? 'Activo' : 'Inactivo',
                     color: _taller!.estado == 1
                         ? AppColors.success
-                        : AppColors.error,
+                        : colorScheme.error,
                   ),
                 ],
               ),
@@ -244,12 +251,12 @@ class _WorkshopPageState extends State<WorkshopPage>
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.secondaryColor.withValues(alpha: 0.1),
+                  color: colorScheme.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.receipt_long, color: AppColors.secondaryColor),
+                child: Icon(Icons.receipt_long, color: colorScheme.secondary),
               ),
-              title: const Text('Historial de Facturas', style: AppTextStyles.bodyText),
+              title: Text('Historial de Facturas', style: textTheme.bodyLarge),
               trailing: const Icon(Icons.chevron_right, color: AppColors.grey),
               onTap: () {
                 Navigator.of(context).push(
@@ -272,9 +279,9 @@ class _WorkshopPageState extends State<WorkshopPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Descripción', style: AppTextStyles.headline1),
+                    Text('Descripción', style: textTheme.headlineSmall),
                     const Divider(height: 24),
-                    Text(_taller!.descripcion, style: AppTextStyles.bodyText),
+                    Text(_taller!.descripcion, style: textTheme.bodyLarge),
                   ],
                 ),
               ),
@@ -286,6 +293,9 @@ class _WorkshopPageState extends State<WorkshopPage>
   }
 
   Widget _buildServiciosList() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Padding(
@@ -338,7 +348,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                     _loadData();
                   }
                 },
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor: colorScheme.primary,
                 child: const Icon(Icons.add, color: AppColors.black),
               ),
             ],
@@ -350,18 +360,19 @@ class _WorkshopPageState extends State<WorkshopPage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.construction, size: 64, color: AppColors.grey),
+                      const Icon(Icons.construction,
+                          size: 64, color: AppColors.grey),
                       const SizedBox(height: 16),
                       Text(
                         'No hay servicios registrados',
-                        style: AppTextStyles.bodyText,
+                        style: textTheme.bodyLarge,
                       ),
                     ],
                   ),
                 )
               : RefreshIndicator(
                   onRefresh: _loadData,
-                  color: AppColors.primaryColor,
+                  color: colorScheme.primary,
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: _servicioViewModel.servicios
@@ -392,7 +403,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: servicio.estado == 1
-                                  ? AppColors.primaryColor.withValues(
+                                  ? colorScheme.primary.withValues(
                                       alpha: 0.1,
                                     )
                                   : AppColors.grey.withValues(alpha: 0.1),
@@ -401,13 +412,13 @@ class _WorkshopPageState extends State<WorkshopPage>
                             child: Icon(
                               Icons.construction,
                               color: servicio.estado == 1
-                                  ? AppColors.primaryColor
+                                  ? colorScheme.primary
                                   : AppColors.grey,
                             ),
                           ),
                           title: Text(
                             servicio.nombre,
-                            style: AppTextStyles.bodyText.copyWith(
+                            style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -417,9 +428,9 @@ class _WorkshopPageState extends State<WorkshopPage>
                               const SizedBox(height: 4),
                               Text(
                                 _getCategoriaText(servicio.categoria),
-                                style: AppTextStyles.caption.copyWith(
+                                style: textTheme.bodySmall?.copyWith(
                                   fontStyle: FontStyle.italic,
-                                  color: AppColors.primaryColor,
+                                  color: colorScheme.primary,
                                 ),
                               ),
                               if (servicio.descripcion != null) ...[
@@ -428,13 +439,13 @@ class _WorkshopPageState extends State<WorkshopPage>
                                   servicio.descripcion!,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.caption,
+                                  style: textTheme.bodySmall,
                                 ),
                               ],
                               const SizedBox(height: 4),
                               Text(
                                 '\$${servicio.precio.toStringAsFixed(2)}',
-                                style: AppTextStyles.bodyText.copyWith(
+                                style: textTheme.bodyLarge?.copyWith(
                                   color: AppColors.success,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -442,18 +453,19 @@ class _WorkshopPageState extends State<WorkshopPage>
                             ],
                           ),
                           trailing: PopupMenuButton(
-                            icon: Icon(Icons.more_vert, color: AppColors.grey),
+                            icon: const Icon(Icons.more_vert,
+                                color: AppColors.grey),
                             itemBuilder: (context) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'edit',
                                 child: Row(
                                   children: [
                                     Icon(
                                       Icons.edit,
-                                      color: AppColors.primaryColor,
+                                      color: colorScheme.primary,
                                     ),
-                                    SizedBox(width: 12),
-                                    Text('Editar'),
+                                    const SizedBox(width: 12),
+                                    const Text('Editar'),
                                   ],
                                 ),
                               ),
@@ -466,7 +478,7 @@ class _WorkshopPageState extends State<WorkshopPage>
                                           ? Icons.cancel
                                           : Icons.check_circle,
                                       color: servicio.estado == 1
-                                          ? AppColors.error
+                                          ? colorScheme.error
                                           : AppColors.success,
                                     ),
                                     const SizedBox(width: 12),
@@ -513,27 +525,30 @@ class _WorkshopPageState extends State<WorkshopPage>
     String value, {
     Color? color,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primaryColor.withValues(alpha: 0.1),
+            color: colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 20, color: color ?? AppColors.primaryColor),
+          child: Icon(icon, size: 20, color: color ?? colorScheme.primary),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTextStyles.caption),
+              Text(label, style: textTheme.bodySmall),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: AppTextStyles.bodyText.copyWith(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w500,
                   color: color,
                 ),

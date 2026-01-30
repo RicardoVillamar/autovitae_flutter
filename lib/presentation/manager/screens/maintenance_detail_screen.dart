@@ -14,7 +14,6 @@ import 'package:autovitae/data/repositories/cliente_repository.dart';
 import 'package:autovitae/data/repositories/usuario_repository.dart';
 import 'package:autovitae/data/repositories/mantenimiento_detalle_repository.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/info_card.dart';
 import 'package:autovitae/presentation/shared/widgets/buttons/primary_button.dart';
 import 'package:autovitae/presentation/manager/screens/generate_invoice_screen.dart';
@@ -176,7 +175,9 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+      SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
@@ -202,7 +203,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
       case EstadoMantenimiento.finalizado:
         return AppColors.success;
       case EstadoMantenimiento.cancelado:
-        return AppColors.error;
+        return Colors.red;
     }
   }
 
@@ -234,8 +235,8 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Servicios guardados exitosamente'),
+          const SnackBar(
+            content: Text('Servicios guardados exitosamente'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -275,11 +276,13 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Detalle de Mantenimiento'),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: colorScheme.primary,
         foregroundColor: AppColors.black,
         elevation: 0,
       ),
@@ -316,13 +319,13 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                             children: [
                               Text(
                                 'Estado Actual',
-                                style: AppTextStyles.caption.copyWith(
+                                style: textTheme.bodySmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 _getEstadoText(_mantenimiento.estado),
-                                style: AppTextStyles.bodyText.copyWith(
+                                style: textTheme.bodyLarge?.copyWith(
                                   color: _getEstadoColor(_mantenimiento.estado),
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -337,7 +340,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                   // Información del cliente
                   Text(
                     'Información del Cliente',
-                    style: AppTextStyles.headline1,
+                    style: textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   InfoCard(
@@ -345,7 +348,9 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                     title: 'Cliente',
                     subtitle: _cliente != null
                         ? '${_cliente!.nombre} ${_cliente!.apellido}'
-                        : (_isLoading ? 'Cargando...' : 'Información no disponible'),
+                        : (_isLoading
+                            ? 'Cargando...'
+                            : 'Información no disponible'),
                   ),
                   InfoCard(
                     leadingIcon: Icons.phone,
@@ -361,7 +366,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                   // Información del vehículo
                   Text(
                     'Información del Vehículo',
-                    style: AppTextStyles.headline1,
+                    style: textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   InfoCard(
@@ -369,7 +374,9 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                     title: 'Vehículo',
                     subtitle: _vehiculo != null
                         ? '${_vehiculo!.marca ?? ''} ${_vehiculo!.modelo ?? ''}'
-                        : (_isLoading ? 'Cargando...' : 'Información no disponible'),
+                        : (_isLoading
+                            ? 'Cargando...'
+                            : 'Información no disponible'),
                   ),
                   InfoCard(
                     leadingIcon: Icons.confirmation_number,
@@ -386,7 +393,8 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                   if (_mantenimiento.direccion != null ||
                       (_mantenimiento.latitud != null &&
                           _mantenimiento.longitud != null)) ...[
-                    Text('Ubicación del Servicio', style: AppTextStyles.headline1),
+                    Text('Ubicación del Servicio',
+                        style: textTheme.headlineSmall),
                     const SizedBox(height: 16),
                     if (_mantenimiento.direccion != null)
                       InfoCard(
@@ -405,7 +413,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                     const SizedBox(height: 24),
                   ],
                   // Fechas
-                  Text('Fechas', style: AppTextStyles.headline1),
+                  Text('Fechas', style: textTheme.headlineSmall),
                   const SizedBox(height: 16),
                   InfoCard(
                     leadingIcon: Icons.event,
@@ -426,7 +434,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                     ),
                   if (_mantenimiento.observaciones?.isNotEmpty == true) ...[
                     const SizedBox(height: 24),
-                    Text('Observaciones', style: AppTextStyles.headline1),
+                    Text('Observaciones', style: textTheme.headlineSmall),
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -439,7 +447,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                       ),
                       child: Text(
                         _mantenimiento.observaciones!,
-                        style: AppTextStyles.bodyText,
+                        style: textTheme.bodyLarge,
                       ),
                     ),
                   ],
@@ -448,12 +456,12 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                   // Servicios del mantenimiento
                   Text(
                     'Servicios del Mantenimiento',
-                    style: AppTextStyles.headline1,
+                    style: textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Selecciona los servicios realizados durante el mantenimiento',
-                    style: AppTextStyles.caption,
+                    style: textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
                   if (_servicioViewModel.servicios.isEmpty)
@@ -465,7 +473,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                       ),
                       child: Text(
                         'No hay servicios disponibles en este taller',
-                        style: AppTextStyles.bodyText,
+                        style: textTheme.bodyLarge,
                       ),
                     )
                   else
@@ -479,34 +487,33 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                           borderRadius: BorderRadius.circular(12),
                           side: isSelected
                               ? BorderSide(
-                                  color: AppColors.primaryColor,
+                                  color: colorScheme.primary,
                                   width: 2,
                                 )
                               : BorderSide.none,
                         ),
                         child: CheckboxListTile(
                           value: isSelected,
-                          onChanged:
-                              _mantenimiento.estado ==
+                          onChanged: _mantenimiento.estado ==
                                   EstadoMantenimiento.cancelado
                               ? null
                               : (value) => _toggleServicio(servicio),
-                          activeColor: AppColors.primaryColor,
+                          activeColor: colorScheme.primary,
                           title: Text(
                             servicio.nombre,
-                            style: AppTextStyles.bodyText.copyWith(
+                            style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           subtitle: Text(
                             servicio.descripcion ?? '',
-                            style: AppTextStyles.caption,
+                            style: textTheme.bodySmall,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           secondary: Text(
                             '\$${servicio.precio.toStringAsFixed(2)}',
-                            style: AppTextStyles.bodyText.copyWith(
+                            style: textTheme.bodyLarge?.copyWith(
                               color: AppColors.success,
                               fontWeight: FontWeight.bold,
                             ),
@@ -519,22 +526,22 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withValues(alpha: 0.1),
+                        color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.primaryColor),
+                        border: Border.all(color: colorScheme.primary),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             'Total Servicios:',
-                            style: AppTextStyles.bodyText.copyWith(
+                            style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             '\$${_totalServicios.toStringAsFixed(2)}',
-                            style: AppTextStyles.headline1.copyWith(
+                            style: textTheme.headlineSmall?.copyWith(
                               color: AppColors.success,
                             ),
                           ),
@@ -557,7 +564,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                   if (_mantenimiento.estado != EstadoMantenimiento.finalizado &&
                       _mantenimiento.estado !=
                           EstadoMantenimiento.cancelado) ...[
-                    Text('Acciones', style: AppTextStyles.headline1),
+                    Text('Acciones', style: textTheme.headlineSmall),
                     const SizedBox(height: 16),
                     if (_mantenimiento.estado != EstadoMantenimiento.enProceso)
                       Padding(
@@ -585,7 +592,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                       text: 'Cancelar Mantenimiento',
                       onPressed: () =>
                           _cambiarEstado(EstadoMantenimiento.cancelado),
-                      backgroundColor: AppColors.error,
+                      backgroundColor: colorScheme.error,
                       isLoading: _isLoading,
                     ),
                   ],
@@ -593,12 +600,12 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                   // Generar factura (solo cuando está finalizado)
                   if (_mantenimiento.estado == EstadoMantenimiento.finalizado &&
                       _serviciosSeleccionados.isNotEmpty) ...[
-                    Text('Facturación', style: AppTextStyles.headline1),
+                    Text('Facturación', style: textTheme.headlineSmall),
                     const SizedBox(height: 16),
                     PrimaryButton(
                       text: 'Generar Factura',
                       onPressed: _generarFactura,
-                      backgroundColor: AppColors.secondaryColor,
+                      backgroundColor: colorScheme.secondary,
                       isLoading: _isLoading,
                     ),
                   ],
@@ -607,8 +614,6 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
             ),
     );
   }
-
-
 
   String _formatDate(int timestamp) {
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp);

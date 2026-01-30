@@ -11,12 +11,10 @@ class InvoiceHistoryScreen extends StatefulWidget {
   const InvoiceHistoryScreen({super.key});
 
   @override
-  State<InvoiceHistoryScreen> createState() =>
-      _InvoiceHistoryScreenState();
+  State<InvoiceHistoryScreen> createState() => _InvoiceHistoryScreenState();
 }
 
-class _InvoiceHistoryScreenState
-    extends State<InvoiceHistoryScreen> {
+class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
   final FacturaViewModel _facturaViewModel = FacturaViewModel();
   final MantenimientoViewModel _mantenimientoViewModel =
       MantenimientoViewModel();
@@ -76,52 +74,53 @@ class _InvoiceHistoryScreenState
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Historial de Facturas'),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: colorScheme.primary,
         foregroundColor: AppColors.black,
         elevation: 0,
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
+          ? Center(
+              child: CircularProgressIndicator(color: colorScheme.primary),
             )
           : _facturas.isEmpty
-          ? const Center(child: Text('No hay facturas registradas'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _facturas.length,
-              itemBuilder: (context, index) {
-                final factura = _facturas[index];
-                return GenericListTile(
-                  leadingIcon: const Icon(
-                    Icons.receipt,
-                    color: AppColors.white,
-                  ),
-                  leadingBackgroundColor: AppColors.secondaryColor,
-                  title:
-                      'Factura #${factura.uidFactura?.substring(0, 8) ?? '---'}',
-                  subtitle:
-                      'Fecha: ${_formatDate(factura.fechaEmision)}\nTotal: \$${factura.total.toStringAsFixed(2)}',
-                  isThreeLine: true,
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.grey,
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            InvoiceDetailScreen(factura: factura),
+              ? const Center(child: Text('No hay facturas registradas'))
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _facturas.length,
+                  itemBuilder: (context, index) {
+                    final factura = _facturas[index];
+                    return GenericListTile(
+                      leadingIcon: const Icon(
+                        Icons.receipt,
+                        color: AppColors.white,
                       ),
+                      leadingBackgroundColor: colorScheme.secondary,
+                      title:
+                          'Factura #${factura.uidFactura?.substring(0, 8) ?? '---'}',
+                      subtitle:
+                          'Fecha: ${_formatDate(factura.fechaEmision)}\nTotal: \$${factura.total.toStringAsFixed(2)}',
+                      isThreeLine: true,
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.grey,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                InvoiceDetailScreen(factura: factura),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
     );
   }
 }

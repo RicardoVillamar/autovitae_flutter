@@ -4,7 +4,6 @@ import 'package:autovitae/data/models/categoria_serivicio_taller.dart';
 import 'package:autovitae/viewmodels/servicio_taller_viewmodel.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/shared/widgets/buttons/primary_button.dart';
 import 'package:autovitae/presentation/shared/widgets/buttons/secondary_button.dart';
 
@@ -100,7 +99,9 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+      SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
@@ -123,13 +124,15 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           widget.servicio == null ? 'Nuevo Servicio' : 'Editar Servicio',
         ),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: colorScheme.primary,
         foregroundColor: AppColors.black,
         elevation: 0,
       ),
@@ -140,12 +143,12 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Información del Servicio', style: AppTextStyles.headline1),
+              Text('Información del Servicio', style: textTheme.headlineSmall),
               const SizedBox(height: 24),
               // Nombre
               Text(
                 'Nombre del Servicio *',
-                style: AppTextStyles.bodyText.copyWith(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -180,7 +183,7 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
               // Categoría
               Text(
                 'Categoría *',
-                style: AppTextStyles.bodyText.copyWith(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -190,7 +193,8 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
+                  border:
+                      Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<CategoriaSerivicioTaller>(
@@ -214,7 +218,7 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
               // Precio
               Text(
                 'Precio *',
-                style: AppTextStyles.bodyText.copyWith(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -256,7 +260,7 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
               // Descripción
               Text(
                 'Descripción',
-                style: AppTextStyles.bodyText.copyWith(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -4,7 +4,6 @@ import 'package:autovitae/presentation/manager/pages/calendario_page.dart';
 import 'package:autovitae/presentation/manager/pages/workshop_page.dart';
 import 'package:autovitae/presentation/manager/pages/profile_page.dart';
 import 'package:autovitae/viewmodels/login_viewmodel.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/presentation/shared/widgets/navigation/custom_bottom_nav_bar.dart';
 
 class HomeManagerScreen extends StatefulWidget {
@@ -60,12 +59,14 @@ class _HomeManagerScreenState extends State<HomeManagerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
         title: const Text('AutoVitae - Gerente'),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
+        backgroundColor: colorScheme.surfaceContainerLowest,
+        foregroundColor: colorScheme.onSurface,
         elevation: 0,
         centerTitle: true,
         actions: [
@@ -77,7 +78,7 @@ class _HomeManagerScreenState extends State<HomeManagerScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 32),
+        padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 12),
         child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: CustomBottomNavBar(

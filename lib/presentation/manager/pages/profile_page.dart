@@ -3,7 +3,6 @@ import 'package:autovitae/data/models/usuario.dart';
 import 'package:autovitae/data/models/gerente.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -36,9 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (_isLoading) {
       return Center(
-        child: CircularProgressIndicator(color: AppColors.primaryColor),
+        child: CircularProgressIndicator(color: colorScheme.primary),
       );
     }
 
@@ -50,39 +52,40 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 24),
           CircleAvatar(
             radius: 60,
-            backgroundColor: AppColors.primaryColor.withAlpha(25),
-            backgroundImage: (_usuario?.fotoUrl != null && _usuario!.fotoUrl!.isNotEmpty)
-            ? NetworkImage(_usuario!.fotoUrl!)
-            : null,
+            backgroundColor: colorScheme.primary.withAlpha(25),
+            backgroundImage:
+                (_usuario?.fotoUrl != null && _usuario!.fotoUrl!.isNotEmpty)
+                    ? NetworkImage(_usuario!.fotoUrl!)
+                    : null,
             child: (_usuario?.fotoUrl == null || _usuario!.fotoUrl!.isEmpty)
-            ? Icon(
-              Icons.person,
-              size: 60,
-              color: AppColors.primaryColor,
-              )
-              : null,
-              ),
+                ? Icon(
+                    Icons.person,
+                    size: 60,
+                    color: colorScheme.primary,
+                  )
+                : null,
+          ),
           const SizedBox(height: 24),
           Text(
             '${_usuario?.nombre ?? ''} ${_usuario?.apellido ?? ''}',
-            style: AppTextStyles.headline1,
+            style: textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
             _usuario?.correo ?? '',
-            style: AppTextStyles.bodyText.copyWith(color: AppColors.grey),
+            style: textTheme.bodyLarge?.copyWith(color: AppColors.grey),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.primaryColor.withValues(alpha: 0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               'Gerente',
-              style: AppTextStyles.bodyText.copyWith(
-                color: AppColors.primaryColor,
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -99,15 +102,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.badge, color: AppColors.primaryColor),
+                    child: Icon(Icons.badge, color: colorScheme.primary),
                   ),
-                  title: Text('Cédula', style: AppTextStyles.caption),
+                  title: Text('Cédula', style: textTheme.bodySmall),
                   subtitle: Text(
                     _usuario?.cedula ?? '',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
                 ),
                 Divider(
@@ -118,15 +121,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.phone, color: AppColors.primaryColor),
+                    child: Icon(Icons.phone, color: colorScheme.primary),
                   ),
-                  title: Text('Teléfono', style: AppTextStyles.caption),
+                  title: Text('Teléfono', style: textTheme.bodySmall),
                   subtitle: Text(
                     _usuario?.telefono ?? '',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
                 ),
                 Divider(
@@ -137,11 +140,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color:
-                          (_gerente?.uidTaller != null
-                                  ? AppColors.success
-                                  : AppColors.warning)
-                              .withValues(alpha: 0.1),
+                      color: (_gerente?.uidTaller != null
+                              ? AppColors.success
+                              : AppColors.warning)
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -153,12 +155,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           : AppColors.warning,
                     ),
                   ),
-                  title: Text('Estado de Taller', style: AppTextStyles.caption),
+                  title: Text('Estado de Taller', style: textTheme.bodySmall),
                   subtitle: Text(
                     _gerente?.uidTaller != null
                         ? 'Taller asignado'
                         : 'Sin taller asignado',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
                 ),
               ],
@@ -174,13 +176,13 @@ class _ProfilePageState extends State<ProfilePage> {
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryColor.withValues(alpha: 0.1),
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.lock, color: AppColors.primaryColor),
+                child: Icon(Icons.lock, color: colorScheme.primary),
               ),
-              title: Text('Cambiar Contraseña', style: AppTextStyles.bodyText),
-              trailing: Icon(
+              title: Text('Cambiar Contraseña', style: textTheme.bodyLarge),
+              trailing: const Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
                 color: AppColors.grey,
@@ -198,13 +200,13 @@ class _ProfilePageState extends State<ProfilePage> {
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryColor.withValues(alpha: 0.1),
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.info_outline, color: AppColors.primaryColor),
+                child: Icon(Icons.info_outline, color: colorScheme.primary),
               ),
-              title: Text('Acerca de', style: AppTextStyles.bodyText),
-              subtitle: Text('AutoVitae v1.0.0', style: AppTextStyles.caption),
+              title: Text('Acerca de', style: textTheme.bodyLarge),
+              subtitle: Text('AutoVitae v1.0.0', style: textTheme.bodySmall),
               onTap: () {
                 showAboutDialog(
                   context: context,
@@ -213,19 +215,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   applicationIcon: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.directions_car,
                       size: 48,
-                      color: AppColors.primaryColor,
+                      color: colorScheme.primary,
                     ),
                   ),
                   children: [
                     Text(
                       'Sistema de gestión de mantenimiento vehicular',
-                      style: AppTextStyles.bodyText,
+                      style: textTheme.bodyLarge,
                     ),
                   ],
                 );

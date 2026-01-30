@@ -11,12 +11,10 @@ class MaintenancePage extends StatefulWidget {
   const MaintenancePage({super.key});
 
   @override
-  State<MaintenancePage> createState() =>
-      _MaintenancePageState();
+  State<MaintenancePage> createState() => _MaintenancePageState();
 }
 
-class _MaintenancePageState
-    extends State<MaintenancePage> {
+class _MaintenancePageState extends State<MaintenancePage> {
   final MantenimientoViewModel _viewModel = MantenimientoViewModel();
   final VehiculoRepository _vehiculoRepository = VehiculoRepository();
   bool _isLoading = false;
@@ -123,7 +121,7 @@ class _MaintenancePageState
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Row(
             children: [
               Expanded(
@@ -148,18 +146,6 @@ class _MaintenancePageState
                   },
                 ),
               ),
-              const SizedBox(width: 8),
-              FloatingActionButton(
-                onPressed: () async {
-                  final result = await Navigator.of(
-                    context,
-                  ).pushNamed('/create_mantenimiento');
-                  if (result == true) {
-                    _loadMantenimientos();
-                  }
-                },
-                child: const Icon(Icons.add),
-              ),
             ],
           ),
         ),
@@ -167,82 +153,86 @@ class _MaintenancePageState
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _viewModel.mantenimientos.isEmpty
-              ? const Center(child: Text('No hay mantenimientos registrados'))
-              : RefreshIndicator(
-                  onRefresh: _loadMantenimientos,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _viewModel.mantenimientos.length,
-                    itemBuilder: (context, index) {
-                      final mantenimiento = _viewModel.mantenimientos[index];
-                      return FutureBuilder(
-                        future: _vehiculoRepository.getById(
-                          mantenimiento.uidVehiculo,
-                        ),
-                        builder: (context, snapshot) {
-                          final vehiculo = snapshot.data;
-                          
-                          // Usar fecha de inicio si existe, si no usar fecha programada
-                          final fechaMostrar = mantenimiento.fechaInicio ?? mantenimiento.fechaProgramada;
-                          final date = DateTime.fromMillisecondsSinceEpoch(fechaMostrar);
-
-                          return GenericListTile(
-                            leadingIcon: Icon(
-                              Icons.build,
-                              color: Colors.white,
+                  ? const Center(
+                      child: Text('No hay mantenimientos registrados'))
+                  : RefreshIndicator(
+                      onRefresh: _loadMantenimientos,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: _viewModel.mantenimientos.length,
+                        itemBuilder: (context, index) {
+                          final mantenimiento =
+                              _viewModel.mantenimientos[index];
+                          return FutureBuilder(
+                            future: _vehiculoRepository.getById(
+                              mantenimiento.uidVehiculo,
                             ),
-                            leadingBackgroundColor: _getEstadoColor(mantenimiento.estado),
-                            title: vehiculo != null
-                                ? '${vehiculo.marca ?? ''} ${vehiculo.modelo ?? ''}'
-                                : 'Vehículo',
-                            subtitle:
-                                '${vehiculo != null ? 'Placa: ${vehiculo.placa ?? ''}\n' : ''}Fecha: ${date.day}/${date.month}/${date.year}\nEstado: ${_getEstadoText(mantenimiento.estado)}',
-                            isThreeLine: true,
-                            trailing: PopupMenuButton(
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'view',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.visibility),
-                                      SizedBox(width: 8),
-                                      Text('Ver Detalles'),
-                                    ],
-                                  ),
+                            builder: (context, snapshot) {
+                              final vehiculo = snapshot.data;
+
+                              final fechaMostrar = mantenimiento.fechaInicio ??
+                                  mantenimiento.fechaProgramada;
+                              final date = DateTime.fromMillisecondsSinceEpoch(
+                                  fechaMostrar);
+
+                              return GenericListTile(
+                                leadingIcon: const Icon(
+                                  Icons.build,
+                                  color: Colors.white,
                                 ),
-                                const PopupMenuItem(
-                                  value: 'change_status',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.swap_horiz),
-                                      SizedBox(width: 8),
-                                      Text('Cambiar Estado'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              onSelected: (value) async {
-                                if (value == 'view') {
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MaintenanceDetailScreen(
+                                leadingBackgroundColor:
+                                    _getEstadoColor(mantenimiento.estado),
+                                title: vehiculo != null
+                                    ? '${vehiculo.marca ?? ''} ${vehiculo.modelo ?? ''}'
+                                    : 'Vehículo',
+                                subtitle:
+                                    '${vehiculo != null ? 'Placa: ${vehiculo.placa ?? ''}\n' : ''}Fecha: ${date.day}/${date.month}/${date.year}\nEstado: ${_getEstadoText(mantenimiento.estado)}',
+                                isThreeLine: true,
+                                trailing: PopupMenuButton(
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'view',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.visibility),
+                                          SizedBox(width: 8),
+                                          Text('Ver Detalles'),
+                                        ],
+                                      ),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'change_status',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.swap_horiz),
+                                          SizedBox(width: 8),
+                                          Text('Cambiar Estado'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                  onSelected: (value) async {
+                                    if (value == 'view') {
+                                      await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              MaintenanceDetailScreen(
                                             mantenimiento: mantenimiento,
                                           ),
-                                    ),
-                                  );
-                                  _loadMantenimientos();
-                                } else if (value == 'change_status') {
-                                  _changeEstado(mantenimiento);
-                                }
-                              },
-                            ),
+                                        ),
+                                      );
+                                      _loadMantenimientos();
+                                    } else if (value == 'change_status') {
+                                      _changeEstado(mantenimiento);
+                                    }
+                                  },
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
-                ),
+                      ),
+                    ),
         ),
       ],
     );

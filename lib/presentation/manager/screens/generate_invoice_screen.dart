@@ -9,7 +9,6 @@ import 'package:autovitae/viewmodels/factura_viewmodel.dart';
 import 'package:autovitae/data/repositories/usuario_repository.dart';
 import 'package:autovitae/data/repositories/cliente_repository.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/shared/widgets/buttons/primary_button.dart';
 
 class GenerateInvoiceScreen extends StatefulWidget {
@@ -115,8 +114,8 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Factura generada exitosamente'),
+          const SnackBar(
+            content: Text('Factura generada exitosamente'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -135,23 +134,27 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+      SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Generar Factura'),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: colorScheme.primary,
         foregroundColor: AppColors.black,
         elevation: 0,
       ),
       body: _isLoading && _clienteNombre.isEmpty
           ? Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
+              child: CircularProgressIndicator(color: colorScheme.primary),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -163,13 +166,13 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryColor.withValues(alpha: 0.1),
+                        color: colorScheme.secondary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.receipt_long,
                         size: 64,
-                        color: AppColors.secondaryColor,
+                        color: colorScheme.secondary,
                       ),
                     ),
                   ),
@@ -177,7 +180,7 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                   Center(
                     child: Text(
                       'Nueva Factura',
-                      style: AppTextStyles.headline1,
+                      style: textTheme.headlineSmall,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -185,20 +188,20 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                   // Cliente info
                   Text(
                     'Información del Cliente',
-                    style: AppTextStyles.headline1,
+                    style: textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   _buildInfoCard(
+                    context: context,
                     icon: Icons.person,
                     title: 'Cliente',
-                    value: _clienteNombre.isEmpty
-                        ? 'Cargando...'
-                        : _clienteNombre,
+                    value:
+                        _clienteNombre.isEmpty ? 'Cargando...' : _clienteNombre,
                   ),
                   const SizedBox(height: 24),
 
                   // Servicios
-                  Text('Servicios Facturados', style: AppTextStyles.headline1),
+                  Text('Servicios Facturados', style: textTheme.headlineSmall),
                   const SizedBox(height: 16),
                   ...widget.servicios.map(
                     (servicio) => Card(
@@ -211,23 +214,23 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryColor.withValues(
+                            color: colorScheme.primary.withValues(
                               alpha: 0.1,
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
                             Icons.build,
-                            color: AppColors.primaryColor,
+                            color: colorScheme.primary,
                           ),
                         ),
                         title: Text(
                           servicio.nombre,
-                          style: AppTextStyles.bodyText,
+                          style: textTheme.bodyLarge,
                         ),
                         trailing: Text(
                           '\$${servicio.precio.toStringAsFixed(2)}',
-                          style: AppTextStyles.bodyText.copyWith(
+                          style: textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.success,
                           ),
@@ -238,7 +241,7 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                   const SizedBox(height: 24),
 
                   // Método de pago
-                  Text('Método de Pago', style: AppTextStyles.headline1),
+                  Text('Método de Pago', style: textTheme.headlineSmall),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 8,
@@ -252,15 +255,14 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                             setState(() => _selectedMetodoPago = metodo);
                           }
                         },
-                        selectedColor: AppColors.primaryColor,
+                        selectedColor: colorScheme.primary,
                         backgroundColor: AppColors.white,
                         labelStyle: TextStyle(
                           color: isSelected
                               ? AppColors.black
-                              : AppColors.textColor,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                              : colorScheme.onSurface,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       );
                     }).toList(),
@@ -279,11 +281,11 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                     ),
                     child: Column(
                       children: [
-                        _buildTotalRow('Subtotal', _subtotal),
+                        _buildTotalRow(context, 'Subtotal', _subtotal),
                         const SizedBox(height: 12),
-                        _buildTotalRow('IVA (12%)', _iva),
+                        _buildTotalRow(context, 'IVA (12%)', _iva),
                         const Divider(height: 24),
-                        _buildTotalRow('Total', _total, isTotal: true),
+                        _buildTotalRow(context, 'Total', _total, isTotal: true),
                       ],
                     ),
                   ),
@@ -294,7 +296,7 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                     text: 'Generar Factura',
                     onPressed: _generarFactura,
                     isLoading: _isLoading,
-                    backgroundColor: AppColors.secondaryColor,
+                    backgroundColor: colorScheme.secondary,
                   ),
                 ],
               ),
@@ -303,10 +305,14 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
   }
 
   Widget _buildInfoCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String value,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -317,10 +323,10 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.1),
+                color: colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: AppColors.primaryColor),
+              child: Icon(icon, color: colorScheme.primary),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -329,14 +335,14 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.caption.copyWith(
+                    style: textTheme.bodySmall?.copyWith(
                       color: AppColors.grey,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -349,21 +355,24 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
     );
   }
 
-  Widget _buildTotalRow(String label, double value, {bool isTotal = false}) {
+  Widget _buildTotalRow(BuildContext context, String label, double value,
+      {bool isTotal = false}) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
           style: isTotal
-              ? AppTextStyles.bodyText.copyWith(fontWeight: FontWeight.bold)
-              : AppTextStyles.bodyText,
+              ? textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+              : textTheme.bodyLarge,
         ),
         Text(
           '\$${value.toStringAsFixed(2)}',
           style: isTotal
-              ? AppTextStyles.headline1.copyWith(color: AppColors.success)
-              : AppTextStyles.bodyText.copyWith(fontWeight: FontWeight.bold),
+              ? textTheme.headlineSmall?.copyWith(color: AppColors.success)
+              : textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );

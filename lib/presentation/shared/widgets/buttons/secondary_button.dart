@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class SecondaryButton extends StatelessWidget {
   final String text;
@@ -18,21 +16,26 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return SizedBox(
       width: fullWidth ? double.infinity : null,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: backgroundColor ?? Colors.transparent,
-          foregroundColor: AppColors.primaryColor,
+          foregroundColor: colorScheme.primary,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          side: const BorderSide(color: AppColors.primaryColor, width: 2),
+          side: BorderSide(color: colorScheme.primary, width: 2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Text(
           text,
-          style: AppTextStyles.buttonText.copyWith(
-            color: AppColors.primaryColor,
+          style: textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: colorScheme.primary,
           ),
         ),
       ),

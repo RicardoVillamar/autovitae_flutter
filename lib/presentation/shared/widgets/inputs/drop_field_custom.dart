@@ -1,5 +1,3 @@
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 
 class DbffCustom extends StatelessWidget {
@@ -23,8 +21,11 @@ class DbffCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return DropdownButtonFormField<String>(
-      dropdownColor: AppColors.white,
+      dropdownColor: colorScheme.surfaceContainer,
       initialValue: value,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: (newValue) {
@@ -41,24 +42,24 @@ class DbffCustom extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         filled: true,
-        fillColor: color ?? AppColors.white,
-        labelStyle: AppTextStyles.caption,
+        fillColor: color ?? colorScheme.surfaceContainerLow,
+        labelStyle: textTheme.bodySmall,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.grey),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.background),
+          borderSide: BorderSide(color: colorScheme.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.error),
+          borderSide: BorderSide(color: colorScheme.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.error),
+          borderSide: BorderSide(color: colorScheme.error),
         ),
       ),
     );

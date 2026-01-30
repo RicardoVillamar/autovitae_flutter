@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 
 class TxtffCustom extends StatelessWidget {
@@ -31,6 +29,9 @@ class TxtffCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return TextFormField(
       maxLength: maxLength,
       controller: controller,
@@ -40,29 +41,29 @@ class TxtffCustom extends StatelessWidget {
       obscureText: obscureText,
       inputFormatters: inputFormatters,
       onChanged: onChanged,
-      cursorColor: AppColors.white,
+      cursorColor: colorScheme.primary,
       decoration: InputDecoration(
         counterText: showCounter ? null : '',
         labelText: label,
-        labelStyle: AppTextStyles.caption,
+        labelStyle: textTheme.bodySmall,
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: colorScheme.surfaceContainerLow,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.grey),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.primaryColor),
+          borderSide: BorderSide(color: colorScheme.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.error),
+          borderSide: BorderSide(color: colorScheme.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.error),
+          borderSide: BorderSide(color: colorScheme.error),
         ),
       ),
     );

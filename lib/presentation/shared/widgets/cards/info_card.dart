@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class InfoCard extends StatelessWidget {
   final String title;
@@ -22,6 +20,9 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 12),
@@ -36,7 +37,7 @@ class InfoCard extends StatelessWidget {
               if (leadingIcon != null) ...[
                 Icon(
                   leadingIcon,
-                  color: iconColor ?? AppColors.primaryColor,
+                  color: iconColor ?? colorScheme.primary,
                   size: 32,
                 ),
                 const SizedBox(width: 16),
@@ -47,7 +48,7 @@ class InfoCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: AppTextStyles.bodyText.copyWith(
+                      style: textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -55,8 +56,8 @@ class InfoCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         subtitle!,
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.grey,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],

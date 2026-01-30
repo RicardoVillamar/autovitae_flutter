@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class DashboardCard extends StatelessWidget {
   final IconData icon;
@@ -19,6 +18,8 @@ class DashboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -41,7 +42,7 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 title,
-                style: AppTextStyles.bodyText.copyWith(
+                style: textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -52,7 +53,7 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: AppTextStyles.caption.copyWith(fontSize: 12),
+                style: textTheme.bodySmall?.copyWith(fontSize: 12),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

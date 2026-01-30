@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class GenericListTile extends StatelessWidget {
   final Widget leadingIcon;
@@ -24,6 +22,9 @@ class GenericListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -35,19 +36,19 @@ class GenericListTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: leadingBackgroundColor?.withValues(alpha: 0.1) ??
-                AppColors.grey.withValues(alpha: 0.1),
+                colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: leadingIcon,
         ),
         title: Text(
           title,
-          style: AppTextStyles.bodyText.copyWith(fontWeight: FontWeight.bold),
+          style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: subtitle != null
             ? Padding(
                 padding: const EdgeInsets.only(top: 4.0),
-                child: Text(subtitle!, style: AppTextStyles.caption),
+                child: Text(subtitle!, style: textTheme.bodySmall),
               )
             : null,
         trailing: trailing,

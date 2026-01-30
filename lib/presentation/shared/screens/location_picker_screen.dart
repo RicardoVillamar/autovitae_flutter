@@ -3,7 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   const LocationPickerScreen({super.key});
@@ -18,7 +17,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   String? _selectedAddress;
   bool _isLoading = false;
 
-  static const LatLng _defaultLocation = LatLng(-2.170, -79.922); // Guayaquil, Ecuador
+  static const LatLng _defaultLocation =
+      LatLng(-2.170, -79.922); // Guayaquil, Ecuador
 
   @override
   void initState() {
@@ -73,12 +73,14 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
         setState(() {
-          _selectedAddress = "${place.street}, ${place.locality}, ${place.country}";
+          _selectedAddress =
+              "${place.street}, ${place.locality}, ${place.country}";
         });
       }
     } catch (e) {
       setState(() {
-        _selectedAddress = "Ubicación seleccionada: ${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}";
+        _selectedAddress =
+            "Ubicación seleccionada: ${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}";
       });
     } finally {
       setState(() => _isLoading = false);
@@ -97,10 +99,13 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccionar Ubicación'),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: colorScheme.primary,
         foregroundColor: AppColors.black,
       ),
       body: Stack(
@@ -137,7 +142,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       Text(
                         _selectedAddress!,
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.bodyText,
+                        style: textTheme.bodyLarge,
                       ),
                       if (_isLoading)
                         const Padding(
@@ -154,9 +159,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             left: 20,
             right: 20,
             child: ElevatedButton(
-              onPressed: _selectedLocation == null || _isLoading ? null : _confirmLocation,
+              onPressed: _selectedLocation == null || _isLoading
+                  ? null
+                  : _confirmLocation,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor: colorScheme.primary,
                 foregroundColor: AppColors.black,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),

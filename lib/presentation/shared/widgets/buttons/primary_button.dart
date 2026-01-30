@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -22,27 +20,36 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return SizedBox(
       width: fullWidth ? double.infinity : null,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? AppColors.primaryColor,
-          foregroundColor: textColor ?? AppColors.black,
+          backgroundColor: backgroundColor ?? colorScheme.primary,
+          foregroundColor: textColor ?? colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 2,
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
+                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
                 ),
               )
-            : Text(text, style: AppTextStyles.buttonText),
+            : Text(
+                text,
+                style: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
       ),
     );
   }

@@ -15,22 +15,28 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 32),
       height: 80,
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(35),
+        color: colorScheme.surface,
+        border: Border.all(
+          color: colorScheme.outlineVariant,
+          width: 0.8,
+        ),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
+            blurRadius: 24,
             offset: const Offset(0, 10),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(35), // Clip para contener el ripple
+        borderRadius: BorderRadius.circular(32),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(items.length, (index) {
@@ -40,13 +46,13 @@ class CustomBottomNavBar extends StatelessWidget {
 
             return Expanded(
               child: Material(
-                color: Colors.transparent,
+                color: colorScheme.surface,
                 child: InkWell(
                   onTap: () => onTap(index),
-                  splashColor: AppColors.primaryColor.withValues(
+                  splashColor: colorScheme.primary.withValues(
                     alpha: 0.1,
                   ), // Color del ripple
-                  highlightColor: AppColors.primaryColor.withValues(
+                  highlightColor: colorScheme.primary.withValues(
                     alpha: 0.05,
                   ), // Color del highlight
                   child: Container(
@@ -62,8 +68,9 @@ class CustomBottomNavBar extends StatelessWidget {
                           ),
                           decoration: isSelected
                               ? BoxDecoration(
-                                  color: AppColors.primaryColor.withValues(
-                                    alpha: 0.2,
+                                  color:
+                                      colorScheme.secondaryContainer.withValues(
+                                    alpha: 0.8,
                                   ),
                                   borderRadius: BorderRadius.circular(20),
                                 )
@@ -71,7 +78,7 @@ class CustomBottomNavBar extends StatelessWidget {
                           child: Icon(
                             icon,
                             color: isSelected
-                                ? AppColors.primaryColor
+                                ? colorScheme.onSecondaryContainer
                                 : AppColors.grey,
                             size: 24,
                           ),
@@ -80,10 +87,10 @@ class CustomBottomNavBar extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             item.label ?? '',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w700,
+                              color: colorScheme.onSecondaryContainer,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),

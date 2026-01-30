@@ -7,7 +7,6 @@ import 'package:autovitae/data/repositories/usuario_repository.dart';
 import 'package:autovitae/presentation/shared/widgets/inputs/text_field_custom.dart';
 import 'package:autovitae/viewmodels/gerente_viewmodel.dart';
 import 'package:autovitae/core/utils/validators.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
 
 class EditGerenteScreen extends StatefulWidget {
   const EditGerenteScreen({super.key});
@@ -23,7 +22,7 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
   final _cloudinaryService = CloudinaryService();
   final ImagePicker _picker = ImagePicker();
 
-  late Gerente _gerente; 
+  late Gerente _gerente;
   bool _isInitialized = false;
   File? _imageFile;
   String? _currentImageUrl;
@@ -56,11 +55,11 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
       final usuario = await _usuarioRepository.getById(_gerente.uidUsuario!);
       if (usuario != null) {
         setState(() {
-          _cedulaController.text = usuario.cedula ?? '';
-          _nombreController.text = usuario.nombre ?? '';
-          _apellidoController.text = usuario.apellido ?? '';
-          _correoController.text = usuario.correo ?? '';
-          _telefonoController.text = usuario.telefono ?? '';
+          _cedulaController.text = usuario.cedula;
+          _nombreController.text = usuario.nombre;
+          _apellidoController.text = usuario.apellido;
+          _correoController.text = usuario.correo;
+          _telefonoController.text = usuario.telefono;
           _currentImageUrl = usuario.fotoUrl;
           _isLoadingData = false;
         });
@@ -82,7 +81,8 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
   }
 
   Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
     if (pickedFile != null) {
       setState(() => _imageFile = File(pickedFile.path));
     }
@@ -115,9 +115,11 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
           );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error en el proceso: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error en el proceso: $e')),
+          );
+        }
       } finally {
         if (mounted) setState(() => _isUploading = false);
       }
@@ -126,42 +128,43 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
       appBar: AppBar(
         title: const Text('Editar Gerente'),
         centerTitle: true,
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: Colors.black,
         elevation: 0,
+        backgroundColor: colorScheme.surfaceContainerLowest,
+        foregroundColor: colorScheme.onSurface,
       ),
-      body: _isLoadingData 
-        ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
-        : SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    _buildAvatarSelector(),
-                    const SizedBox(height: 25),
-                    _buildFormFields(screenWidth),
-                    const SizedBox(height: 32),
-                    _buildActionButtons(),
-                    const SizedBox(height: 20),
-                  ],
+      body: _isLoadingData
+          ? Center(child: CircularProgressIndicator(color: colorScheme.primary))
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      _buildAvatarSelector(colorScheme),
+                      const SizedBox(height: 25),
+                      _buildFormFields(screenWidth, colorScheme),
+                      const SizedBox(height: 32),
+                      _buildActionButtons(colorScheme),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
     );
   }
 
-  Widget _buildAvatarSelector() {
+  Widget _buildAvatarSelector(ColorScheme colorScheme) {
     ImageProvider? imageProvider;
     if (_imageFile != null) {
       imageProvider = FileImage(_imageFile!);
@@ -174,10 +177,11 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
         children: [
           CircleAvatar(
             radius: 55,
-            backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+            backgroundColor: colorScheme.primary.withAlpha(25),
             backgroundImage: imageProvider,
-            child: imageProvider == null 
-                ? const Icon(Icons.person, size: 55, color: AppColors.grey) 
+            child: imageProvider == null
+                ? Icon(Icons.person,
+                    size: 55, color: colorScheme.onSurfaceVariant)
                 : null,
           ),
           Positioned(
@@ -187,11 +191,11 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
               onTap: _pickImage,
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryColor,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.edit, size: 20, color: Colors.black),
+                child: Icon(Icons.edit, size: 20, color: colorScheme.onPrimary),
               ),
             ),
           ),
@@ -200,42 +204,62 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
     );
   }
 
-  Widget _buildFormFields(double screenWidth) {
+  Widget _buildFormFields(double screenWidth, ColorScheme colorScheme) {
     return Column(
       children: [
-        _buildSectionHeader(Icons.badge_outlined, 'Datos de Identidad'),
+        _buildSectionHeader(
+            Icons.badge_outlined, 'Datos de Identidad', colorScheme),
         _buildFormCard([
           Opacity(
             opacity: 0.6,
             child: AbsorbPointer(
               child: TxtffCustom(
-                label: 'Cédula', 
-                screenWidth: screenWidth, 
+                label: 'Cédula',
+                screenWidth: screenWidth,
                 controller: _cedulaController,
               ),
             ),
           ),
-          TxtffCustom(label: 'Nombres', screenWidth: screenWidth, controller: _nombreController, validator: Validators.nameValidator),
-          TxtffCustom(label: 'Apellidos', screenWidth: screenWidth, controller: _apellidoController, validator: Validators.nameValidator),
+          TxtffCustom(
+              label: 'Nombres',
+              screenWidth: screenWidth,
+              controller: _nombreController,
+              validator: Validators.nameValidator.call),
+          TxtffCustom(
+              label: 'Apellidos',
+              screenWidth: screenWidth,
+              controller: _apellidoController,
+              validator: Validators.nameValidator.call),
         ]),
         const SizedBox(height: 5),
-        _buildSectionHeader(Icons.contact_mail_outlined, 'Información de Contacto'),
+        _buildSectionHeader(Icons.contact_mail_outlined,
+            'Información de Contacto', colorScheme),
         _buildFormCard([
-          TxtffCustom(label: 'Correo electrónico', screenWidth: screenWidth, controller: _correoController, keyboardType: TextInputType.emailAddress, validator: Validators.emailValidator),
-          TxtffCustom(label: 'Teléfono', screenWidth: screenWidth, controller: _telefonoController, keyboardType: TextInputType.phone, validator: Validators.phoneValidator),
+          TxtffCustom(
+              label: 'Correo electrónico',
+              screenWidth: screenWidth,
+              controller: _correoController,
+              keyboardType: TextInputType.emailAddress,
+              validator: Validators.emailValidator.call),
+          TxtffCustom(
+              label: 'Teléfono',
+              screenWidth: screenWidth,
+              controller: _telefonoController,
+              keyboardType: TextInputType.phone,
+              validator: Validators.phoneValidator.call),
         ]),
       ],
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(ColorScheme colorScheme) {
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primaryColor,
+              foregroundColor: colorScheme.primary,
               shape: const StadiumBorder(),
               fixedSize: const Size.fromHeight(45),
             ),
@@ -245,30 +269,39 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton(
-            onPressed: (_viewModel.isLoading || _isUploading) ? null : _updateGerente,
+            onPressed:
+                (_viewModel.isLoading || _isUploading) ? null : _updateGerente,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              foregroundColor: AppColors.black,
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
               shape: const StadiumBorder(),
               fixedSize: const Size.fromHeight(45),
             ),
             child: (_viewModel.isLoading || _isUploading)
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.black))
-                : const Text('Actualizar', style: TextStyle(fontWeight: FontWeight.bold)),
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: colorScheme.onPrimary))
+                : const Text('Actualizar',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSectionHeader(IconData icon, String title) {
+  Widget _buildSectionHeader(
+      IconData icon, String title, ColorScheme colorScheme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primaryColor, size: 20),
+          Icon(icon, color: colorScheme.primary, size: 20),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         ],
       ),
     );
@@ -278,9 +311,14 @@ class _EditGerenteScreenState extends State<EditGerenteScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+              color: Theme.of(context).colorScheme.shadow.withAlpha(25),
+              blurRadius: 8,
+              offset: const Offset(0, 2))
+        ],
       ),
       child: Column(children: children),
     );

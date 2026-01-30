@@ -1,5 +1,4 @@
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/data/models/taller.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/generic_list_tile.dart';
 import 'package:autovitae/viewmodels/taller_viewmodel.dart';
@@ -47,7 +46,7 @@ class _TalleresPageState extends State<TalleresPage> {
 
   Future<void> _navigateToCreateTaller() async {
     final result = await Navigator.of(context).pushNamed('/create_taller');
-    
+
     if (result == true) {
       _loadTalleres();
     }
@@ -110,6 +109,9 @@ class _TalleresPageState extends State<TalleresPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Padding(
@@ -121,19 +123,19 @@ class _TalleresPageState extends State<TalleresPage> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Buscar taller...',
-                    hintStyle: AppTextStyles.caption,
+                    hintStyle: textTheme.bodySmall,
                     prefixIcon: Icon(
                       Icons.search,
-                      color: AppColors.primaryColor,
+                      color: colorScheme.primary,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppColors.grey),
+                      borderSide: BorderSide(color: colorScheme.outlineVariant),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: AppColors.primaryColor,
+                        color: colorScheme.primary,
                         width: 2,
                       ),
                     ),
@@ -144,8 +146,8 @@ class _TalleresPageState extends State<TalleresPage> {
               const SizedBox(width: 8),
               FloatingActionButton(
                 onPressed: _navigateToCreateTaller,
-                backgroundColor: AppColors.primaryColor,
-                foregroundColor: AppColors.black,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 child: const Icon(Icons.add),
               ),
             ],
@@ -155,71 +157,78 @@ class _TalleresPageState extends State<TalleresPage> {
           child: _isLoading
               ? Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
+                    color: colorScheme.primary,
                   ),
                 )
               : _viewModel.talleres.isEmpty
-              ? Center(
-                  child: Text(
-                    'No hay talleres registrados',
-                    style: AppTextStyles.bodyText,
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _viewModel.talleres.length,
-                  itemBuilder: (context, index) {
-                    final taller = _viewModel.talleres[index];
-                    final isActive = taller.estado == 1;
-                    return GenericListTile(
-                      leadingIcon: Icon(
-                        Icons.build,
-                        color: isActive ? AppColors.success : AppColors.grey,
-                        size: 28,
+                  ? Center(
+                      child: Text(
+                        'No hay talleres registrados',
+                        style: textTheme.bodyLarge,
                       ),
-                      leadingBackgroundColor: isActive
-                          ? AppColors.success.withOpacity(0.2)
-                          : AppColors.grey.withOpacity(0.2),
-                      title: taller.nombre,
-                      subtitle: '${taller.direccion}\nTel: ${taller.telefono}',
-                      isThreeLine: true,
-                      trailing: PopupMenuButton(
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, color: AppColors.primaryColor),
-                                const SizedBox(width: 8),
-                                const Text('Editar'),
-                              ],
-                            ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: _viewModel.talleres.length,
+                      itemBuilder: (context, index) {
+                        final taller = _viewModel.talleres[index];
+                        final isActive = taller.estado == 1;
+                        return GenericListTile(
+                          leadingIcon: Icon(
+                            Icons.build,
+                            color: isActive
+                                ? AppColors.success
+                                : colorScheme.onSurfaceVariant,
+                            size: 28,
                           ),
-                          PopupMenuItem(
-                            value: 'toggle',
-                            child: Row(
-                              children: [
-                                Icon(
-                                  isActive ? Icons.delete : Icons.check,
-                                  color: isActive ? AppColors.error : AppColors.success,
+                          leadingBackgroundColor: isActive
+                              ? colorScheme.primary.withValues(alpha: 0.2)
+                              : colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.2),
+                          title: taller.nombre,
+                          subtitle:
+                              '${taller.direccion}\nTel: ${taller.telefono}',
+                          isThreeLine: true,
+                          trailing: PopupMenuButton(
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit,
+                                        color: colorScheme.primary),
+                                    const SizedBox(width: 8),
+                                    const Text('Editar'),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                Text(isActive ? 'Desactivar' : 'Activar'),
-                              ],
-                            ),
+                              ),
+                              PopupMenuItem(
+                                value: 'toggle',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      isActive ? Icons.delete : Icons.check,
+                                      color: isActive
+                                          ? colorScheme.error
+                                          : AppColors.success,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(isActive ? 'Desactivar' : 'Activar'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                _navigateToEditTaller(taller);
+                              } else if (value == 'toggle') {
+                                _toggleTallerStatus(taller);
+                              }
+                            },
                           ),
-                        ],
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            _navigateToEditTaller(taller);
-                          } else if (value == 'toggle') {
-                            _toggleTallerStatus(taller);
-                          }
-                        },
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
         ),
       ],
     );

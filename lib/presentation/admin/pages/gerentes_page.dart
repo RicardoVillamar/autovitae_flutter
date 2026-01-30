@@ -3,8 +3,6 @@ import 'package:autovitae/data/models/gerente.dart';
 import 'package:autovitae/viewmodels/gerente_viewmodel.dart';
 import 'package:autovitae/data/repositories/usuario_repository.dart';
 import 'package:autovitae/data/repositories/taller_repository.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class GerentesPage extends StatefulWidget {
   const GerentesPage({super.key});
@@ -42,20 +40,27 @@ class _GerentesPageState extends State<GerentesPage> {
   }
 
   Future<void> _navigateToEditGerente(Gerente gerente) async {
-  final result = await Navigator.of(context).pushNamed(
-    '/edit_gerente',
-    arguments: gerente,
-  );
-  if (result == true) _loadGerentes();
+    final result = await Navigator.of(context).pushNamed(
+      '/edit_gerente',
+      arguments: gerente,
+    );
+    if (result == true) _loadGerentes();
   }
 
+  Future<void> _popSelectAction(String value, Gerente gerente) async {
+    if (value == 'edit') _navigateToEditGerente(gerente);
+    if (value == 'assign') _showAssignTallerDialog(gerente);
+    if (value == 'remove') _removeGerenteTaller(gerente);
+    if (value == 'toggle') _toggleGerenteStatus(gerente);
+  }
 
   Future<void> _showAssignTallerDialog(Gerente gerente) async {
     final talleres = await _tallerRepository.getActive();
     if (!mounted) return;
 
     if (talleres.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No hay talleres disponibles')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay talleres disponibles')));
       return;
     }
 
@@ -82,7 +87,8 @@ class _GerentesPageState extends State<GerentesPage> {
     );
 
     if (selectedTaller != null && mounted) {
-      final success = await _viewModel.asignarTaller(gerente.uidGerente!, selectedTaller);
+      final success =
+          await _viewModel.asignarTaller(gerente.uidGerente!, selectedTaller);
       if (success) _loadGerentes();
     }
   }
@@ -92,10 +98,15 @@ class _GerentesPageState extends State<GerentesPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Remover Taller'),
-        content: const Text('¿Estás seguro de que deseas remover el taller asignado?'),
+        content: const Text(
+            '¿Estás seguro de que deseas remover el taller asignado?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remover')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Remover')),
         ],
       ),
     );
@@ -111,18 +122,23 @@ class _GerentesPageState extends State<GerentesPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('¿${action[0].toUpperCase()}${action.substring(1)} gerente?'),
+        title:
+            Text('¿${action[0].toUpperCase()}${action.substring(1)} gerente?'),
         content: Text('¿Estás seguro de que deseas $action a este gerente?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(action.toUpperCase())),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(action.toUpperCase())),
         ],
       ),
     );
 
     if (confirm == true) {
-      final success = gerente.estado == 1 
-          ? await _viewModel.eliminarGerente(gerente.uidGerente!) 
+      final success = gerente.estado == 1
+          ? await _viewModel.eliminarGerente(gerente.uidGerente!)
           : await _viewModel.activarGerente(gerente.uidGerente!);
       if (success) _loadGerentes();
     }
@@ -130,6 +146,9 @@ class _GerentesPageState extends State<GerentesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Padding(
@@ -138,9 +157,9 @@ class _GerentesPageState extends State<GerentesPage> {
             children: [
               Expanded(
                 child: SwitchListTile(
-                  title: Text('Solo sin taller', style: AppTextStyles.bodyText),
+                  title: Text('Solo sin taller', style: textTheme.bodyLarge),
                   value: _showOnlySinTaller,
-                  activeColor: AppColors.primaryColor,
+                  activeThumbColor: colorScheme.primary,
                   onChanged: (value) {
                     setState(() => _showOnlySinTaller = value);
                     _loadGerentes();
@@ -149,8 +168,8 @@ class _GerentesPageState extends State<GerentesPage> {
               ),
               FloatingActionButton(
                 onPressed: _navigateToCreateGerente,
-                backgroundColor: AppColors.primaryColor,
-                foregroundColor: AppColors.black,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 child: const Icon(Icons.add),
               ),
             ],
@@ -158,9 +177,13 @@ class _GerentesPageState extends State<GerentesPage> {
         ),
         Expanded(
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
+              ? Center(
+                  child: CircularProgressIndicator(color: colorScheme.primary))
               : _viewModel.gerentes.isEmpty
-                  ? Center(child: Text(_showOnlySinTaller ? 'No hay gerentes sin taller' : 'No hay gerentes registrados'))
+                  ? Center(
+                      child: Text(_showOnlySinTaller
+                          ? 'No hay gerentes sin taller'
+                          : 'No hay gerentes registrados'))
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: _viewModel.gerentes.length,
@@ -169,10 +192,15 @@ class _GerentesPageState extends State<GerentesPage> {
                         return FutureBuilder(
                           future: Future.wait([
                             _usuarioRepository.getById(gerente.uidUsuario!),
-                            gerente.uidTaller != null ? _tallerRepository.getById(gerente.uidTaller!) : Future.value(null),
+                            gerente.uidTaller != null
+                                ? _tallerRepository.getById(gerente.uidTaller!)
+                                : Future.value(null),
                           ]),
-                          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                            if (!snapshot.hasData) return const SizedBox(height: 100);
+                          builder:
+                              (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                            if (!snapshot.hasData) {
+                              return const SizedBox(height: 100);
+                            }
 
                             final usuario = snapshot.data![0];
                             final taller = snapshot.data![1];
@@ -182,44 +210,67 @@ class _GerentesPageState extends State<GerentesPage> {
                             return Card(
                               elevation: 2,
                               margin: const EdgeInsets.only(bottom: 12),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
                               child: Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: Row(
                                   children: [
                                     CircleAvatar(
                                       radius: 28,
-                                      backgroundColor: (fotoUrl != null && fotoUrl.isNotEmpty) 
-                                          ? Colors.transparent 
-                                          : (isActive ? AppColors.secondaryColor.withOpacity(0.1) : AppColors.grey.withOpacity(0.1)),
-                                      backgroundImage: (fotoUrl != null && fotoUrl.isNotEmpty) 
-                                          ? NetworkImage(fotoUrl) 
+                                      backgroundColor: (fotoUrl != null &&
+                                              fotoUrl.isNotEmpty)
+                                          ? Colors.transparent
+                                          : (isActive
+                                              ? colorScheme.secondary
+                                                  .withValues(alpha: 0.5)
+                                              : colorScheme.onSurface
+                                                  .withValues(alpha: 0.5)),
+                                      backgroundImage: (fotoUrl != null &&
+                                              fotoUrl.isNotEmpty)
+                                          ? NetworkImage(fotoUrl)
                                           : null,
-                                      child: (fotoUrl == null || fotoUrl.isEmpty)
-                                          ? Icon(Icons.person, color: isActive ? AppColors.secondaryColor : AppColors.grey, size: 30)
+                                      child: (fotoUrl == null ||
+                                              fotoUrl.isEmpty)
+                                          ? Icon(Icons.person,
+                                              color: isActive
+                                                  ? colorScheme.secondary
+                                                      .withValues(alpha: 0.5)
+                                                  : colorScheme.onSurface
+                                                      .withValues(alpha: 0.5),
+                                              size: 30)
                                           : null,
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             '${usuario?.nombre ?? ''} ${usuario?.apellido ?? ''}',
-                                            style: AppTextStyles.headline1.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+                                            style: textTheme.headlineSmall
+                                                ?.copyWith(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                           ),
                                           const SizedBox(height: 4),
+                                          Text(usuario?.correo ?? '',
+                                              style:
+                                                  textTheme.bodyLarge?.copyWith(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.normal,
+                                              )),
                                           Text(
-                                            usuario?.correo ?? '', 
-                                            style: AppTextStyles.bodyText.copyWith(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.normal,
-                                            )
-                                          ),
-                                          Text(
-                                            taller != null ? 'Taller: ${taller.nombre}' : 'Sin taller asignado',
-                                            style: AppTextStyles.bodyText.copyWith(
-                                              color: taller != null ? AppColors.secondaryColor : Colors.orange,
+                                            taller != null
+                                                ? 'Taller: ${taller.nombre}'
+                                                : 'Sin taller asignado',
+                                            style:
+                                                textTheme.bodyLarge?.copyWith(
+                                              color: taller != null
+                                                  ? colorScheme.secondary
+                                                  : Colors.orange,
                                               fontSize: 13,
                                             ),
                                           ),
@@ -229,39 +280,41 @@ class _GerentesPageState extends State<GerentesPage> {
                                     PopupMenuButton(
                                       icon: const Icon(Icons.more_vert),
                                       onSelected: (value) {
-                                        if (value == 'edit') _navigateToEditGerente(gerente);
-                                        if (value == 'assign') _showAssignTallerDialog(gerente);
-                                        if (value == 'remove') _removeGerenteTaller(gerente);
-                                        if (value == 'toggle') _toggleGerenteStatus(gerente);
+                                        _popSelectAction(value, gerente);
                                       },
                                       itemBuilder: (context) => [
-                                        PopupMenuItem(
+                                        const PopupMenuItem(
                                           value: 'edit',
                                           child: Row(
-                                            children: const [
-                                              Icon(Icons.edit, size: 20, color: Colors.blue),
+                                            children: [
+                                              Icon(Icons.edit,
+                                                  size: 20, color: Colors.blue),
                                               SizedBox(width: 12),
                                               Text('Editar'),
                                             ],
                                           ),
                                         ),
                                         if (gerente.uidTaller == null)
-                                          PopupMenuItem(
+                                          const PopupMenuItem(
                                             value: 'assign',
                                             child: Row(
-                                              children: const [
-                                                Icon(Icons.assignment_ind, size: 20, color: Colors.green),
+                                              children: [
+                                                Icon(Icons.assignment_ind,
+                                                    size: 20,
+                                                    color: Colors.green),
                                                 SizedBox(width: 12),
                                                 Text('Asignar Taller'),
                                               ],
                                             ),
                                           ),
                                         if (gerente.uidTaller != null)
-                                          PopupMenuItem(
+                                          const PopupMenuItem(
                                             value: 'remove',
                                             child: Row(
-                                              children: const [
-                                                Icon(Icons.assignment_late, size: 20, color: Colors.orange),
+                                              children: [
+                                                Icon(Icons.assignment_late,
+                                                    size: 20,
+                                                    color: Colors.orange),
                                                 SizedBox(width: 12),
                                                 Text('Remover Taller'),
                                               ],
@@ -272,12 +325,19 @@ class _GerentesPageState extends State<GerentesPage> {
                                           child: Row(
                                             children: [
                                               Icon(
-                                                isActive ? Icons.block : Icons.check_circle_outline,
+                                                isActive
+                                                    ? Icons.block
+                                                    : Icons
+                                                        .check_circle_outline,
                                                 size: 20,
-                                                color: isActive ? Colors.red : Colors.green,
+                                                color: isActive
+                                                    ? Colors.red
+                                                    : Colors.green,
                                               ),
                                               const SizedBox(width: 12),
-                                              Text(isActive ? 'Desactivar' : 'Activar'),
+                                              Text(isActive
+                                                  ? 'Desactivar'
+                                                  : 'Activar'),
                                             ],
                                           ),
                                         ),

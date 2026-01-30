@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:autovitae/data/models/taller.dart';
 import 'package:autovitae/viewmodels/taller_viewmodel.dart';
 import 'package:autovitae/core/utils/validators.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class CreateTallerScreen extends StatefulWidget {
   const CreateTallerScreen({super.key});
@@ -21,7 +19,6 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
   final _telefonoController = TextEditingController();
   final _correoController = TextEditingController();
   final _descripcionController = TextEditingController();
-
   @override
   void dispose() {
     _nombreController.dispose();
@@ -35,7 +32,7 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
   Future<void> _createTaller() async {
     if (_formKey.currentState!.validate()) {
       final taller = Taller(
-        uidGerente: '', 
+        uidGerente: '',
         nombre: _nombreController.text,
         direccion: _direccionController.text,
         telefono: _telefonoController.text,
@@ -54,16 +51,17 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: const Text('Registrar Taller'),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.primaryColor, 
-        foregroundColor: Colors.black, 
+        backgroundColor: colorScheme.surfaceContainerLowest,
+        foregroundColor: colorScheme.onSurface,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -74,25 +72,48 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionHeader(Icons.add_business_outlined, 'Información del Negocio'),
+                _buildSectionHeader(
+                    Icons.add_business_outlined, 'Información del Negocio'),
                 const SizedBox(height: 5),
                 _buildFormCard([
-                  TxtffCustom(label: 'Nombre del taller', screenWidth: screenWidth, controller: _nombreController, validator: Validators.nameValidator),
+                  TxtffCustom(
+                      label: 'Nombre del taller',
+                      screenWidth: screenWidth,
+                      controller: _nombreController,
+                      validator: Validators.nameValidator.call),
                   const SizedBox(height: 5),
-                  TxtffCustom(label: 'Dirección del taller', screenWidth: screenWidth, controller: _direccionController, validator: Validators.addressValidator),
+                  TxtffCustom(
+                      label: 'Dirección del taller',
+                      screenWidth: screenWidth,
+                      controller: _direccionController,
+                      validator: Validators.addressValidator.call),
                   const SizedBox(height: 5),
-                  TxtffCustom(label: 'Descripción del taller', screenWidth: screenWidth, controller: _descripcionController, maxLength: 200),
+                  TxtffCustom(
+                      label: 'Descripción del taller',
+                      screenWidth: screenWidth,
+                      controller: _descripcionController,
+                      maxLength: 200),
                 ]),
                 const SizedBox(height: 5),
-                _buildSectionHeader(Icons.contact_phone_outlined, 'Contacto Directo'),
+                _buildSectionHeader(
+                    Icons.contact_phone_outlined, 'Contacto Directo'),
                 const SizedBox(height: 5),
                 _buildFormCard([
-                  TxtffCustom(label: 'Correo electrónico', screenWidth: screenWidth, controller: _correoController, keyboardType: TextInputType.emailAddress, validator: Validators.emailValidator),
+                  TxtffCustom(
+                      label: 'Correo electrónico',
+                      screenWidth: screenWidth,
+                      controller: _correoController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: Validators.emailValidator.call),
                   const SizedBox(height: 5),
-                  TxtffCustom(label: 'Teléfono de contacto', screenWidth: screenWidth, controller: _telefonoController, keyboardType: TextInputType.phone, validator: Validators.phoneValidator),
+                  TxtffCustom(
+                      label: 'Teléfono de contacto',
+                      screenWidth: screenWidth,
+                      controller: _telefonoController,
+                      keyboardType: TextInputType.phone,
+                      validator: Validators.phoneValidator.call),
                 ]),
                 const SizedBox(height: 5),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
@@ -103,14 +124,16 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(context),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.primaryColor,
-                              side: const BorderSide(color: AppColors.primaryColor, width: 1.5),
+                              foregroundColor: colorScheme.primary,
+                              side: BorderSide(
+                                  color: colorScheme.primary, width: 1.5),
                               shape: const StadiumBorder(),
                               padding: EdgeInsets.zero,
                             ),
                             child: const Text(
                               'Cancelar',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
@@ -120,10 +143,11 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
                         child: SizedBox(
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: _viewModel.isLoading ? null : _createTaller,
+                            onPressed:
+                                _viewModel.isLoading ? null : _createTaller,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryColor,
-                              foregroundColor: AppColors.black,
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onPrimary,
                               elevation: 0,
                               shape: const StadiumBorder(),
                               padding: EdgeInsets.zero,
@@ -132,11 +156,16 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.black),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
                                   )
                                 : const Text(
                                     'Guardar',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),
@@ -154,22 +183,33 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
   }
 
   Widget _buildSectionHeader(IconData icon, String title) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       children: [
-        Icon(icon, color: AppColors.primaryColor, size: 22),
+        Icon(icon, color: colorScheme.primary, size: 22),
         const SizedBox(width: 8),
-        Text(title, style: AppTextStyles.bodyText.copyWith(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(title,
+            style: textTheme.bodyLarge
+                ?.copyWith(fontWeight: FontWeight.bold, fontSize: 16)),
       ],
     );
   }
 
   Widget _buildFormCard(List<Widget> children) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 5))],
+        boxShadow: [
+          BoxShadow(
+              color: colorScheme.shadow.withAlpha(25),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
       ),
       child: Column(children: children),
     );

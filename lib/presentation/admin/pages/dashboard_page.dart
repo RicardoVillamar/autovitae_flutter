@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/dashboard_card.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -31,21 +30,26 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Bienvenido, $_adminName', style: AppTextStyles.headline1),
+          Text('Bienvenido, $_adminName', style: textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(
             'Panel de Administración',
-            style: AppTextStyles.caption.copyWith(color: AppColors.grey),
+            style: textTheme.bodySmall
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 32),
           Expanded(
             child: GridView.count(
-              padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight + 24),
+              padding: const EdgeInsets.only(
+                  bottom: kBottomNavigationBarHeight + 24),
               crossAxisCount: 2,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
@@ -55,7 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icons.store,
                   title: 'Gestionar Talleres',
                   subtitle: 'Administrar talleres',
-                  color: AppColors.primaryColor,
+                  color: colorScheme.primary,
                   onTap: () {
                     DefaultTabController.of(context).animateTo(1);
                   },
@@ -64,7 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icons.people,
                   title: 'Gestionar Gerentes',
                   subtitle: 'Administrar gerentes',
-                  color: AppColors.success,
+                  color: colorScheme.primary,
                   onTap: () {
                     DefaultTabController.of(context).animateTo(2);
                   },
@@ -73,7 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icons.group,
                   title: 'Gestionar Clientes',
                   subtitle: 'Ver clientes registrados',
-                  color: AppColors.secondaryColor,
+                  color: colorScheme.secondary,
                   onTap: () {
                     Navigator.of(context).pushNamed('/clientes_admin');
                   },
@@ -86,8 +90,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Próximamente'),
-                        backgroundColor: AppColors.primaryColor,
+                        content: const Text('Próximamente'),
+                        backgroundColor: colorScheme.primary,
                       ),
                     );
                   },

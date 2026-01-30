@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Necesario para obtener el File
+import 'package:image_picker/image_picker.dart';
 import 'package:autovitae/data/services/cloudinary_service.dart';
 import 'package:autovitae/presentation/shared/widgets/inputs/text_field_custom.dart';
 import 'package:autovitae/viewmodels/gerente_viewmodel.dart';
 import 'package:autovitae/core/utils/validators.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
 
 class CreateGerenteScreen extends StatefulWidget {
   const CreateGerenteScreen({super.key});
@@ -17,14 +16,14 @@ class CreateGerenteScreen extends StatefulWidget {
 class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
   final _formKey = GlobalKey<FormState>();
   final _viewModel = GerenteViewModel();
-  
+
   final _cloudinaryService = CloudinaryService();
-  
+
   final ImagePicker _picker = ImagePicker();
 
   File? _imageFile;
   bool _isUploading = false;
-  
+
   final _cedulaController = TextEditingController();
   final _nombreController = TextEditingController();
   final _apellidoController = TextEditingController();
@@ -85,9 +84,11 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
           );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error en el proceso: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error en el proceso: $e')),
+          );
+        }
       } finally {
         if (mounted) setState(() => _isUploading = false);
       }
@@ -96,15 +97,15 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
       appBar: AppBar(
-        title: const Text('Nuevo Gerente'), 
-        centerTitle: true, 
-        backgroundColor: AppColors.primaryColor, 
-        foregroundColor: Colors.black, 
+        title: const Text('Nuevo Gerente'),
+        backgroundColor: colorScheme.surfaceContainerLowest,
+        foregroundColor: colorScheme.onSurface,
+        centerTitle: true,
         elevation: 0,
       ),
       body: SafeArea(
@@ -115,11 +116,11 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 10),
-                _buildAvatarSelector(),
+                _buildAvatarSelector(colorScheme),
                 const SizedBox(height: 25),
-                _buildFormFields(screenWidth),
+                _buildFormFields(screenWidth, colorScheme),
                 const SizedBox(height: 32),
-                _buildActionButtons(),
+                _buildActionButtons(colorScheme),
                 const SizedBox(height: 20),
               ],
             ),
@@ -129,16 +130,17 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
     );
   }
 
-  Widget _buildAvatarSelector() {
+  Widget _buildAvatarSelector(ColorScheme colorScheme) {
     return Center(
       child: Stack(
         children: [
           CircleAvatar(
             radius: 55,
-            backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+            backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
             backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
-            child: _imageFile == null 
-                ? const Icon(Icons.person, size: 55, color: AppColors.grey) 
+            child: _imageFile == null
+                ? Icon(Icons.person,
+                    size: 55, color: colorScheme.onSurfaceVariant)
                 : null,
           ),
           Positioned(
@@ -148,11 +150,12 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
               onTap: _pickImage,
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryColor,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.camera_alt, size: 20, color: Colors.black),
+                child: Icon(Icons.camera_alt,
+                    size: 20, color: colorScheme.onPrimary),
               ),
             ),
           ),
@@ -161,34 +164,62 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
     );
   }
 
-  Widget _buildFormFields(double screenWidth) {
+  Widget _buildFormFields(double screenWidth, ColorScheme colorScheme) {
     return Column(
       children: [
-        _buildSectionHeader(Icons.badge_outlined, 'Datos de Identidad'),
+        _buildSectionHeader(
+            Icons.badge_outlined, 'Datos de Identidad', colorScheme),
         _buildFormCard([
-          TxtffCustom(label: 'Número de Cédula', screenWidth: screenWidth, controller: _cedulaController, keyboardType: TextInputType.number),
-          TxtffCustom(label: 'Nombres', screenWidth: screenWidth, controller: _nombreController, validator: Validators.nameValidator),
-          TxtffCustom(label: 'Apellidos', screenWidth: screenWidth, controller: _apellidoController, validator: Validators.nameValidator),
+          TxtffCustom(
+              label: 'Número de Cédula',
+              screenWidth: screenWidth,
+              controller: _cedulaController,
+              keyboardType: TextInputType.number),
+          TxtffCustom(
+              label: 'Nombres',
+              screenWidth: screenWidth,
+              controller: _nombreController,
+              validator: Validators.nameValidator.call),
+          TxtffCustom(
+              label: 'Apellidos',
+              screenWidth: screenWidth,
+              controller: _apellidoController,
+              validator: Validators.nameValidator.call),
         ]),
         const SizedBox(height: 15),
-        _buildSectionHeader(Icons.lock_outline, 'Contacto y Seguridad'),
+        _buildSectionHeader(
+            Icons.lock_outline, 'Contacto y Seguridad', colorScheme),
         _buildFormCard([
-          TxtffCustom(label: 'Correo electrónico', screenWidth: screenWidth, controller: _correoController, keyboardType: TextInputType.emailAddress, validator: Validators.emailValidator),
-          TxtffCustom(label: 'Teléfono', screenWidth: screenWidth, controller: _telefonoController, keyboardType: TextInputType.phone, validator: Validators.phoneValidator),
-          TxtffCustom(label: 'Contraseña', screenWidth: screenWidth, controller: _passwordController, obscureText: true),
+          TxtffCustom(
+              label: 'Correo electrónico',
+              screenWidth: screenWidth,
+              controller: _correoController,
+              keyboardType: TextInputType.emailAddress,
+              validator: Validators.emailValidator.call),
+          TxtffCustom(
+              label: 'Teléfono',
+              screenWidth: screenWidth,
+              controller: _telefonoController,
+              keyboardType: TextInputType.phone,
+              validator: Validators.phoneValidator.call),
+          TxtffCustom(
+              label: 'Contraseña',
+              screenWidth: screenWidth,
+              controller: _passwordController,
+              obscureText: true),
         ]),
       ],
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(ColorScheme colorScheme) {
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primaryColor,
+              foregroundColor: colorScheme.primary,
               shape: const StadiumBorder(),
               fixedSize: const Size.fromHeight(45),
             ),
@@ -198,42 +229,57 @@ class _CreateGerenteScreenState extends State<CreateGerenteScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton(
-            onPressed: (_viewModel.isLoading || _isUploading) ? null : _createGerente,
+            onPressed:
+                (_viewModel.isLoading || _isUploading) ? null : _createGerente,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              foregroundColor: AppColors.black,
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
               shape: const StadiumBorder(),
               fixedSize: const Size.fromHeight(45),
             ),
             child: (_viewModel.isLoading || _isUploading)
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.black))
-                : const Text('Guardar', style: TextStyle(fontWeight: FontWeight.bold)),
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: colorScheme.onPrimary))
+                : const Text('Guardar',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSectionHeader(IconData icon, String title) {
+  Widget _buildSectionHeader(
+      IconData icon, String title, ColorScheme colorScheme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primaryColor, size: 20),
+          Icon(icon, color: colorScheme.primary, size: 20),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         ],
       ),
     );
   }
 
   Widget _buildFormCard(List<Widget> children) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2))
+        ],
       ),
       child: Column(children: children),
     );

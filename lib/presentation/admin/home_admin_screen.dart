@@ -3,7 +3,6 @@ import 'package:autovitae/presentation/admin/pages/dashboard_page.dart';
 import 'package:autovitae/presentation/admin/pages/talleres_page.dart';
 import 'package:autovitae/presentation/admin/pages/gerentes_page.dart';
 import 'package:autovitae/viewmodels/login_viewmodel.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/presentation/shared/widgets/navigation/custom_bottom_nav_bar.dart';
 
 class HomeAdminScreen extends StatefulWidget {
@@ -58,12 +57,14 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
         title: const Text('AutoVitae - Administrador'),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
         elevation: 0,
         centerTitle: true,
         actions: [

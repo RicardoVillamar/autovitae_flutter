@@ -8,6 +8,7 @@ class Vehiculo {
   final int? anio;
   final String? placa;
   final int kilometraje;
+  final String? imageUrl;
   final int estado;
 
   Vehiculo({
@@ -18,6 +19,7 @@ class Vehiculo {
     this.anio,
     this.placa,
     this.kilometraje = 0,
+    this.imageUrl,
     this.estado = 1,
   });
 
@@ -38,6 +40,7 @@ class Vehiculo {
                 : null),
       placa: data['placa'] ?? '',
       kilometraje: (data['kilometraje'] ?? 0) as int,
+      imageUrl: data['imageUrl'] as String?,
       estado: (data['estado'] ?? 1) as int,
     );
   }
@@ -51,7 +54,32 @@ class Vehiculo {
       'anio': anio,
       'placa': placa,
       'kilometraje': kilometraje,
+      'imageUrl': imageUrl,
       'estado': estado,
     };
+  }
+
+  Vehiculo copyWith({
+    String? uidVehiculo,
+    String? uidCliente,
+    String? marca,
+    String? modelo,
+    int? anio,
+    String? placa,
+    int? kilometraje,
+    String? imageUrl,
+    int? estado,
+  }) {
+    return Vehiculo(
+      uidVehiculo: uidVehiculo ?? this.uidVehiculo,
+      uidCliente: uidCliente ?? this.uidCliente,
+      marca: marca ?? this.marca,
+      modelo: modelo ?? this.modelo,
+      anio: anio ?? this.anio,
+      placa: placa ?? this.placa,
+      kilometraje: kilometraje ?? this.kilometraje,
+      imageUrl: imageUrl ?? this.imageUrl,
+      estado: estado ?? this.estado,
+    );
   }
 }

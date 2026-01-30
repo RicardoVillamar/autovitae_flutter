@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:autovitae/data/models/vehiculo.dart';
 import 'package:autovitae/viewmodels/vehiculo_viewmodel.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
+import 'package:autovitae/presentation/shared/widgets/cards/card_vehicle.dart';
 
 class VehiclesPage extends StatefulWidget {
   const VehiclesPage({super.key});
@@ -89,152 +88,108 @@ class _VehiclesPageState extends State<VehiclesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Stack(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Mis Vehículos', style: AppTextStyles.headline1),
-              FloatingActionButton(
-                onPressed: _navigateToCreateVehiculo,
-                backgroundColor: AppColors.primaryColor,
-                child: const Icon(Icons.add, color: AppColors.black),
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Mis Vehículos', style: textTheme.headlineSmall),
+                  Text(
+                    '${_viewModel.vehiculos.length} registrados',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : _viewModel.vehiculos.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.directions_car,
-                        size: 64,
-                        color: AppColors.grey,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: colorScheme.primary,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No tienes vehículos registrados',
-                        style: AppTextStyles.bodyText,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Presiona + para agregar uno',
-                        style: AppTextStyles.caption,
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadVehiculos,
-                  color: AppColors.primaryColor,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _viewModel.vehiculos.length,
-                    itemBuilder: (context, index) {
-                      final vehiculo = _viewModel.vehiculos[index];
-                      return Card(
-                        elevation: 2,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          leading: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withValues(
-                                alpha: 0.1,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(
-                              Icons.directions_car,
-                              color: AppColors.primaryColor,
-                              size: 28,
-                            ),
-                          ),
-                          title: Text(
-                            '${vehiculo.marca} ${vehiculo.modelo}',
-                            style: AppTextStyles.bodyText.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              Text(
-                                'Placa: ${vehiculo.placa}',
-                                style: AppTextStyles.caption,
-                              ),
-                              Text(
-                                'Año: ${vehiculo.anio}',
-                                style: AppTextStyles.caption,
-                              ),
-                              Text(
-                                'Kilometraje: ${vehiculo.kilometraje} km',
-                                style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.primaryColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          trailing: PopupMenuButton(
-                            icon: Icon(Icons.more_vert, color: AppColors.grey),
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.edit,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                    SizedBox(width: 12),
-                                    Text('Editar'),
-                                  ],
-                                ),
-                              ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete, color: AppColors.error),
-                                    SizedBox(width: 12),
-                                    Text('Eliminar'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                _navigateToEditVehiculo(vehiculo);
-                              } else if (value == 'delete') {
-                                _deleteVehiculo(vehiculo);
-                              }
+                    )
+                  : _viewModel.vehiculos.isEmpty
+                      ? _buildEmptyState(colorScheme, textTheme)
+                      : RefreshIndicator(
+                          onRefresh: _loadVehiculos,
+                          color: colorScheme.primary,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: _viewModel.vehiculos.length,
+                            itemBuilder: (context, index) {
+                              final vehiculo = _viewModel.vehiculos[index];
+                              return VehicleCard(
+                                vehiculo: vehiculo,
+                                onEdit: () => _navigateToEditVehiculo(vehiculo),
+                                onDelete: () => _deleteVehiculo(vehiculo),
+                                onTap: () => _navigateToEditVehiculo(vehiculo),
+                              );
                             },
                           ),
-                          isThreeLine: true,
                         ),
-                      );
-                    },
-                  ),
-                ),
+            ),
+          ],
+        ),
+        // FAB posicionado abajo a la derecha
+        Positioned(
+          right: 24,
+          bottom: 48,
+          child: FloatingActionButton.extended(
+            onPressed: _navigateToCreateVehiculo,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            icon: const Icon(Icons.add),
+            label: const Text('Agregar'),
+          ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyState(ColorScheme colorScheme, TextTheme textTheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.directions_car_outlined,
+              size: 64,
+              color: colorScheme.primary.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No tienes vehículos registrados',
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Agrega tu primer vehículo para comenzar',
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 80), // Espacio para el FAB
+        ],
+      ),
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-/// Service to handle Cloudinary image operations like upload, remove, and update.
 class CloudinaryService {
   static final _instance = CloudinaryService._internal();
   final Cloudinary cloudinary;
@@ -18,7 +17,8 @@ class CloudinaryService {
   }
 
   CloudinaryService._internal()
-    : cloudinary = Cloudinary.fromStringUrl(dotenv.env['CLOUDINARY_URL'] ?? '');
+      : cloudinary =
+            Cloudinary.fromStringUrl(dotenv.env['CLOUDINARY_URL'] ?? '');
 
   /// Uploads an image to Cloudinary and returns the URL.
   Future<String> uploadImage(File image) async {

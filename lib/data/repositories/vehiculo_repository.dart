@@ -98,6 +98,17 @@ class VehiculoRepository {
     }
   }
 
+  // Actualizar imagen del vehículo
+  Future<void> updateImageUrl(String uid, String? imageUrl) async {
+    try {
+      await _firestore.collection(_collection).doc(uid).update({
+        'imageUrl': imageUrl,
+      });
+    } catch (e) {
+      throw Exception('Error al actualizar imagen: $e');
+    }
+  }
+
   // Eliminar vehiculo (cambiar estado)
   Future<void> delete(String uid) async {
     try {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:autovitae/viewmodels/register_viewmodel.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/shared/widgets/inputs/text_field_custom.dart';
 import 'package:autovitae/presentation/shared/screens/location_picker_screen.dart';
 
@@ -92,6 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().subtract(
@@ -102,11 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryColor,
-              onPrimary: AppColors.black,
-              onSurface: AppColors.textColor,
-            ),
+            colorScheme: colorScheme,
           ),
           child: child!,
         );
@@ -132,17 +127,18 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _showErrorAlert(String message) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Error', style: TextStyle(color: AppColors.error)),
+        title: Text('Error', style: TextStyle(color: colorScheme.error)),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
+            child: Text(
               'OK',
-              style: TextStyle(color: AppColors.primaryColor),
+              style: TextStyle(color: colorScheme.primary),
             ),
           ),
         ],
@@ -210,9 +206,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registro exitoso'),
-          backgroundColor: AppColors.success,
+        SnackBar(
+          content: const Text('Registro exitoso'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
       // Navigate to home
@@ -227,14 +223,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Registro de Cliente'),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
       ),
       body: _viewModel.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -243,7 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Datos Personales', style: AppTextStyles.headline1),
+                  Text('Datos Personales', style: textTheme.headlineSmall),
                   const SizedBox(height: 20),
 
                   // Nombre y Apellido
@@ -285,7 +280,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   // Fecha Nacimiento (Calendar)
                   Text(
                     'Fecha de Nacimiento *',
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -298,9 +293,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         vertical: 16,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.grey),
+                        border: Border.all(color: colorScheme.outline),
                         borderRadius: BorderRadius.circular(10),
-                        color: AppColors.white,
+                        color: colorScheme.surface,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -309,11 +304,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             _fechaNacimiento == null
                                 ? 'Seleccionar fecha'
                                 : '${_fechaNacimiento!.day}/${_fechaNacimiento!.month}/${_fechaNacimiento!.year}',
-                            style: AppTextStyles.bodyText,
+                            style: textTheme.bodyLarge,
                           ),
-                          const Icon(
+                          Icon(
                             Icons.calendar_today,
-                            color: AppColors.primaryColor,
+                            color: colorScheme.primary,
                           ),
                         ],
                       ),
@@ -324,40 +319,39 @@ class _RegisterPageState extends State<RegisterPage> {
                   // Genero (RadioButton)
                   Text(
                     'Género *',
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: 'Masculino',
-                        groupValue: _selectedGenero,
-                        activeColor: AppColors.primaryColor,
-                        onChanged: (value) =>
-                            setState(() => _selectedGenero = value!),
-                      ),
-                      const Text('Masculino'),
-                      Radio<String>(
-                        value: 'Femenino',
-                        groupValue: _selectedGenero,
-                        activeColor: AppColors.primaryColor,
-                        onChanged: (value) =>
-                            setState(() => _selectedGenero = value!),
-                      ),
-                      const Text('Femenino'),
-                    ],
-                  ),
+                  RadioGroup<String>(
+                      groupValue: _selectedGenero,
+                      onChanged: (value) =>
+                          setState(() => _selectedGenero = value!),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Radio<String>(
+                            value: 'Masculino',
+                            activeColor: colorScheme.primary,
+                          ),
+                          const Text('Masculino'),
+                          Radio<String>(
+                            value: 'Femenino',
+                            activeColor: colorScheme.primary,
+                          ),
+                          const Text('Femenino'),
+                        ],
+                      )),
                   const SizedBox(height: 16),
 
                   // Datos de Contacto / Ubicación
-                  Text('Ubicación y Cuenta', style: AppTextStyles.headline1),
+                  Text('Ubicación y Cuenta', style: textTheme.headlineSmall),
                   const SizedBox(height: 20),
 
                   // Direccion (Location Picker)
                   Text(
                     'Dirección *',
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -370,15 +364,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         vertical: 16,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.grey),
+                        border: Border.all(color: colorScheme.outline),
                         borderRadius: BorderRadius.circular(10),
-                        color: AppColors.white,
+                        color: colorScheme.surface,
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_on,
-                            color: AppColors.primaryColor,
+                            color: colorScheme.primary,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -386,10 +380,10 @@ class _RegisterPageState extends State<RegisterPage> {
                               _direccionController.text.isEmpty
                                   ? 'Seleccionar ubicación en el mapa'
                                   : _direccionController.text,
-                              style: AppTextStyles.bodyText.copyWith(
+                              style: textTheme.bodyLarge?.copyWith(
                                 color: _direccionController.text.isEmpty
-                                    ? AppColors.grey
-                                    : AppColors.textColor,
+                                    ? colorScheme.onSurfaceVariant
+                                    : colorScheme.onSurface,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -403,7 +397,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   // Ciudad (ComboBox)
                   Text(
                     'Ciudad *',
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -411,9 +405,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.grey),
+                      border: Border.all(color: colorScheme.outline),
                       borderRadius: BorderRadius.circular(10),
-                      color: AppColors.white,
+                      color: colorScheme.surface,
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
@@ -468,7 +462,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       'Desea aceptar nuestros términos y condiciones',
                     ),
                     value: _acceptedTerms,
-                    activeColor: AppColors.primaryColor,
+                    activeColor: colorScheme.primary,
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     onChanged: (bool? value) {
@@ -486,13 +480,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: ElevatedButton(
                       onPressed: _register,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        foregroundColor: AppColors.black,
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
                         'Registrarse',
-                        style: AppTextStyles.buttonText,
+                        selectionColor: colorScheme.onPrimary,
                       ),
                     ),
                   ),
@@ -504,8 +498,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: _clearForm,
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: AppColors.error),
-                        foregroundColor: AppColors.error,
+                        side: BorderSide(color: colorScheme.error),
+                        foregroundColor: colorScheme.error,
                       ),
                       child: const Text('Limpiar formulario'),
                     ),

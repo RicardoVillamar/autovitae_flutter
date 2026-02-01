@@ -9,8 +9,7 @@ class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
 
   @override
-  State<ServicesPage> createState() =>
-      _ServicesPageState();
+  State<ServicesPage> createState() => _ServicesPageState();
 }
 
 class _ServicesPageState extends State<ServicesPage> {
@@ -152,114 +151,116 @@ class _ServicesPageState extends State<ServicesPage> {
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _viewModel.servicios.isEmpty
-              ? const Center(child: Text('No hay servicios registrados'))
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _viewModel.servicios
-                      .where(
-                        (s) =>
-                            _filtroCategoria == null ||
-                            s.categoria == _filtroCategoria,
-                      )
-                      .length,
-                  itemBuilder: (context, index) {
-                    final serviciosFiltrados = _viewModel.servicios
-                        .where(
-                          (s) =>
-                              _filtroCategoria == null ||
-                              s.categoria == _filtroCategoria,
-                        )
-                        .toList();
-                    final servicio = serviciosFiltrados[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: servicio.estado == 1
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey,
-                          child: const Icon(
-                            Icons.construction,
-                            color: Colors.white,
-                          ),
-                        ),
-                        title: Text(servicio.nombre),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _getCategoriaText(servicio.categoria),
-                              style: const TextStyle(
-                                fontStyle: FontStyle.italic,
+                  ? const Center(child: Text('No hay servicios registrados'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: _viewModel.servicios
+                          .where(
+                            (s) =>
+                                _filtroCategoria == null ||
+                                s.categoria == _filtroCategoria,
+                          )
+                          .length,
+                      itemBuilder: (context, index) {
+                        final serviciosFiltrados = _viewModel.servicios
+                            .where(
+                              (s) =>
+                                  _filtroCategoria == null ||
+                                  s.categoria == _filtroCategoria,
+                            )
+                            .toList();
+                        final servicio = serviciosFiltrados[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: servicio.estado == 1
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
+                              child: const Icon(
+                                Icons.construction,
+                                color: Colors.white,
                               ),
                             ),
-                            if (servicio.descripcion != null)
-                              Text(
-                                servicio.descripcion!,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            Text(
-                              '\$${servicio.precio.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: PopupMenuButton(
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(
-                              value: 'edit',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit),
-                                  SizedBox(width: 8),
-                                  Text('Editar'),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: 'toggle',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    servicio.estado == 1
-                                        ? Icons.delete
-                                        : Icons.check,
+                            title: Text(servicio.nombre),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getCategoriaText(servicio.categoria),
+                                  style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    servicio.estado == 1
-                                        ? 'Desactivar'
-                                        : 'Activar',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                          onSelected: (value) async {
-                            if (value == 'edit') {
-                              final result = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      RegisterServiceScreen(servicio: servicio),
                                 ),
-                              );
-                              if (result == true) {
-                                _loadServicios();
-                              }
-                            } else if (value == 'toggle') {
-                              _toggleServicioStatus(servicio);
-                            }
-                          },
-                        ),
-                        isThreeLine: true,
-                      ),
-                    );
-                  },
-                ),
+                                if (servicio.descripcion != null)
+                                  Text(
+                                    servicio.descripcion!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                Text(
+                                  '\$${servicio.precio.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: PopupMenuButton(
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit),
+                                      SizedBox(width: 8),
+                                      Text('Editar'),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 'toggle',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        servicio.estado == 1
+                                            ? Icons.delete
+                                            : Icons.check,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        servicio.estado == 1
+                                            ? 'Desactivar'
+                                            : 'Activar',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              onSelected: (value) async {
+                                if (value == 'edit') {
+                                  final result =
+                                      await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RegisterServiceScreen(
+                                              servicio: servicio),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    _loadServicios();
+                                  }
+                                } else if (value == 'toggle') {
+                                  _toggleServicioStatus(servicio);
+                                }
+                              },
+                            ),
+                            isThreeLine: true,
+                          ),
+                        );
+                      },
+                    ),
         ),
       ],
     );

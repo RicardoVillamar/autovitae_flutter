@@ -1,3 +1,4 @@
+import 'package:autovitae/presentation/shared/widgets/buttons/secondary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:autovitae/data/models/mantenimiento.dart';
 import 'package:autovitae/data/models/mantenimiento_detalle.dart';
@@ -8,7 +9,6 @@ import 'package:autovitae/data/models/servicio_taller.dart';
 import 'package:autovitae/data/models/estado_mantenimiento.dart';
 import 'package:autovitae/viewmodels/mantenimiento_viewmodel.dart';
 import 'package:autovitae/viewmodels/servicio_taller_viewmodel.dart';
-import 'package:autovitae/data/repositories/cita_repository.dart';
 import 'package:autovitae/data/repositories/vehiculo_repository.dart';
 import 'package:autovitae/data/repositories/cliente_repository.dart';
 import 'package:autovitae/data/repositories/usuario_repository.dart';
@@ -30,7 +30,6 @@ class MaintenanceDetailScreen extends StatefulWidget {
 
 class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
   final MantenimientoViewModel _viewModel = MantenimientoViewModel();
-  final CitaRepository _citaRepository = CitaRepository();
   final VehiculoRepository _vehiculoRepository = VehiculoRepository();
   final ClienteRepository _clienteRepository = ClienteRepository();
   final UsuarioRepository _usuarioRepository = UsuarioRepository();
@@ -57,10 +56,6 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
     setState(() => _isLoading = true);
 
     try {
-      if (_mantenimiento.uidCita != null) {
-        _cita = await _citaRepository.getById(_mantenimiento.uidCita!);
-      }
-
       if (_cita != null) {
         _vehiculo = await _vehiculoRepository.getById(_cita!.uidVehiculo);
         final cliente = await _clienteRepository.getById(_cita!.uidCliente);
@@ -141,7 +136,6 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
       setState(() {
         _mantenimiento = Mantenimiento(
           uidMantenimiento: _mantenimiento.uidMantenimiento,
-          uidCita: _mantenimiento.uidCita,
           uidTaller: _mantenimiento.uidTaller,
           uidCliente: _mantenimiento.uidCliente,
           uidVehiculo: _mantenimiento.uidVehiculo,
@@ -197,9 +191,9 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
   Color _getEstadoColor(EstadoMantenimiento estado) {
     switch (estado) {
       case EstadoMantenimiento.pendiente:
-        return Colors.orange;
-      case EstadoMantenimiento.enProceso:
         return AppColors.warning;
+      case EstadoMantenimiento.enProceso:
+        return const ColorScheme.dark().secondaryFixedDim;
       case EstadoMantenimiento.finalizado:
         return AppColors.success;
       case EstadoMantenimiento.cancelado:
@@ -439,10 +433,10 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: colorScheme.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.grey.withValues(alpha: 0.3),
+                          color: colorScheme.outline.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
@@ -528,7 +522,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                       decoration: BoxDecoration(
                         color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: colorScheme.primary),
+                        border: Border.all(color: colorScheme.primaryFixed),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -573,7 +567,7 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                           text: 'Iniciar Mantenimiento',
                           onPressed: () =>
                               _cambiarEstado(EstadoMantenimiento.enProceso),
-                          backgroundColor: AppColors.warning,
+                          backgroundColor: colorScheme.primary,
                           isLoading: _isLoading,
                         ),
                       ),
@@ -584,16 +578,14 @@ class _MaintenanceDetailScreenState extends State<MaintenanceDetailScreen> {
                           text: 'Finalizar Mantenimiento',
                           onPressed: () =>
                               _cambiarEstado(EstadoMantenimiento.finalizado),
-                          backgroundColor: AppColors.success,
+                          backgroundColor: colorScheme.tertiary,
                           isLoading: _isLoading,
                         ),
                       ),
-                    PrimaryButton(
+                    SecondaryButton(
                       text: 'Cancelar Mantenimiento',
                       onPressed: () =>
                           _cambiarEstado(EstadoMantenimiento.cancelado),
-                      backgroundColor: colorScheme.error,
-                      isLoading: _isLoading,
                     ),
                   ],
 

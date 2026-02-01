@@ -305,10 +305,12 @@ class _WorkshopPageState extends State<WorkshopPage>
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.2,
+                      ),
                     ),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),

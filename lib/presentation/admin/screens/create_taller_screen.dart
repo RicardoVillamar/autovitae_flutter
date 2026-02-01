@@ -55,7 +55,7 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerHighest,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('Registrar Taller'),
         centerTitle: true,
@@ -74,7 +74,7 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
               children: [
                 _buildSectionHeader(
                     Icons.add_business_outlined, 'Información del Negocio'),
-                const SizedBox(height: 5),
+                const SizedBox(height: 24),
                 _buildFormCard([
                   TxtffCustom(
                       label: 'Nombre del taller',
@@ -97,7 +97,7 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
                 const SizedBox(height: 5),
                 _buildSectionHeader(
                     Icons.contact_phone_outlined, 'Contacto Directo'),
-                const SizedBox(height: 5),
+                const SizedBox(height: 24),
                 _buildFormCard([
                   TxtffCustom(
                       label: 'Correo electrónico',
@@ -113,7 +113,7 @@ class _CreateTallerScreenState extends State<CreateTallerScreen> {
                       keyboardType: TextInputType.phone,
                       validator: Validators.phoneValidator.call),
                 ]),
-                const SizedBox(height: 5),
+                const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(

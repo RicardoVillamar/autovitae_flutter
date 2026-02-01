@@ -1,4 +1,3 @@
-import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/data/models/taller.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/generic_list_tile.dart';
 import 'package:autovitae/viewmodels/taller_viewmodel.dart';
@@ -177,7 +176,7 @@ class _TalleresPageState extends State<TalleresPage> {
                           leadingIcon: Icon(
                             Icons.build,
                             color: isActive
-                                ? AppColors.success
+                                ? colorScheme.primary
                                 : colorScheme.onSurfaceVariant,
                             size: 28,
                           ),
@@ -210,7 +209,7 @@ class _TalleresPageState extends State<TalleresPage> {
                                       isActive ? Icons.delete : Icons.check,
                                       color: isActive
                                           ? colorScheme.error
-                                          : AppColors.success,
+                                          : colorScheme.primary,
                                     ),
                                     const SizedBox(width: 8),
                                     Text(isActive ? 'Desactivar' : 'Activar'),

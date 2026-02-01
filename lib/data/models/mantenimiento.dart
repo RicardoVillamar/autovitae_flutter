@@ -3,7 +3,6 @@ import 'package:autovitae/data/models/estado_mantenimiento.dart';
 
 class Mantenimiento {
   final String? uidMantenimiento;
-  final String? uidCita;
   final String uidTaller;
   final String uidCliente;
   final String uidVehiculo;
@@ -18,7 +17,6 @@ class Mantenimiento {
 
   Mantenimiento({
     this.uidMantenimiento,
-    this.uidCita,
     required this.uidTaller,
     required this.uidCliente,
     required this.uidVehiculo,
@@ -31,7 +29,7 @@ class Mantenimiento {
     this.longitud,
     this.direccion,
   }) : fechaProgramada =
-           fechaProgramada ?? DateTime.now().millisecondsSinceEpoch;
+            fechaProgramada ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Mantenimiento.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
@@ -42,7 +40,6 @@ class Mantenimiento {
     }
     return Mantenimiento(
       uidMantenimiento: doc.id,
-      uidCita: data['uidCita'] as String?,
       uidTaller: data['uidTaller'] ?? '',
       uidCliente: data['uidCliente'] ?? '',
       uidVehiculo: data['uidVehiculo'] ?? '',
@@ -61,7 +58,6 @@ class Mantenimiento {
   Map<String, dynamic> toFirestore() {
     return {
       'uidMantenimiento': uidMantenimiento,
-      'uidCita': uidCita,
       'uidTaller': uidTaller,
       'uidCliente': uidCliente,
       'uidVehiculo': uidVehiculo,

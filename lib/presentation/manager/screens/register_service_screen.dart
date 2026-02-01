@@ -133,7 +133,7 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
           widget.servicio == null ? 'Nuevo Servicio' : 'Editar Servicio',
         ),
         backgroundColor: colorScheme.primary,
-        foregroundColor: AppColors.black,
+        foregroundColor: colorScheme.onPrimary,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -158,17 +158,19 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
                 decoration: InputDecoration(
                   hintText: 'Ej: Cambio de aceite',
                   filled: true,
-                  fillColor: AppColors.white,
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
@@ -191,10 +193,11 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(8),
-                  border:
-                      Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<CategoriaSerivicioTaller>(
@@ -232,17 +235,17 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
                   hintText: '0.00',
                   prefixText: '\$ ',
                   filled: true,
-                  fillColor: AppColors.white,
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color: colorScheme.onSurfaceVariant.withAlpha(77),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color: colorScheme.onSurfaceVariant.withAlpha(77),
                     ),
                   ),
                 ),
@@ -257,7 +260,6 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              // Descripción
               Text(
                 'Descripción',
                 style: textTheme.bodyLarge?.copyWith(
@@ -271,17 +273,17 @@ class _RegisterServiceScreenState extends State<RegisterServiceScreen> {
                 decoration: InputDecoration(
                   hintText: 'Describe el servicio...',
                   filled: true,
-                  fillColor: AppColors.white,
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color: colorScheme.onSurfaceVariant.withAlpha(77),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppColors.grey.withValues(alpha: 0.3),
+                      color: colorScheme.onSurfaceVariant.withAlpha(77),
                     ),
                   ),
                 ),

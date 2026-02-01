@@ -87,7 +87,7 @@ class _HomeManagerScreenState extends State<HomeManagerScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.build_circle),
-            label: 'Mantenimientos',
+            label: 'Trabajos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),

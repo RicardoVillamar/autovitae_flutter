@@ -6,6 +6,7 @@ import 'package:autovitae/viewmodels/factura_viewmodel.dart';
 import 'package:autovitae/viewmodels/servicio_taller_viewmodel.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/generic_list_tile.dart';
+import 'package:autovitae/presentation/shared/widgets/cards/info_row.dart';
 
 class InvoiceDetailScreen extends StatefulWidget {
   final Factura factura;
@@ -57,8 +58,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de Factura'),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: AppColors.black,
+        backgroundColor: colorScheme.surfaceContainerLowest,
+        foregroundColor: colorScheme.onSurface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -90,8 +91,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
                               Chip(
                                 label: Text(
                                   widget.factura.estado.name.toUpperCase(),
-                                  style: const TextStyle(
-                                      color: AppColors.white, fontSize: 12),
+                                  style: TextStyle(
+                                      color: colorScheme.surface, fontSize: 12),
                                 ),
                                 backgroundColor:
                                     widget.factura.estado.name == 'pagada'
@@ -102,15 +103,21 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          _buildInfoRow('Fecha',
-                              _formatDate(widget.factura.fechaEmision)),
+                          InfoRow(
+                            label: 'Fecha',
+                            value: _formatDate(widget.factura.fechaEmision),
+                          ),
                           const SizedBox(height: 8),
-                          _buildInfoRow('Método de Pago',
-                              _getMetodoPagoLabel(widget.factura.metodoPago)),
+                          InfoRow(
+                            label: 'Método de Pago',
+                            value:
+                                _getMetodoPagoLabel(widget.factura.metodoPago),
+                          ),
                           const Divider(height: 24),
-                          _buildInfoRow(
-                            'Total',
-                            '\$${widget.factura.total.toStringAsFixed(2)}',
+                          InfoRow(
+                            label: 'Total',
+                            value:
+                                '\$${widget.factura.total.toStringAsFixed(2)}',
                             isBold: true,
                             valueColor: AppColors.success,
                           ),
@@ -137,7 +144,7 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: colorScheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                           color: AppColors.grey.withValues(alpha: 0.3)),
@@ -180,25 +187,6 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value,
-      {bool isBold = false, Color? valueColor}) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: textTheme.bodySmall),
-        Text(
-          value,
-          style: textTheme.bodyLarge?.copyWith(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: valueColor,
-          ),
-        ),
-      ],
     );
   }
 

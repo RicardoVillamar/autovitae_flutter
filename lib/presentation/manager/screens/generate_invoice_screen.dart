@@ -147,9 +147,10 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Generar Factura'),
+        title: const Text('Generacion de Factura',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: colorScheme.primary,
-        foregroundColor: AppColors.black,
+        foregroundColor: colorScheme.onPrimary,
         elevation: 0,
       ),
       body: _isLoading && _clienteNombre.isEmpty
@@ -256,7 +257,7 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                           }
                         },
                         selectedColor: colorScheme.primary,
-                        backgroundColor: AppColors.white,
+                        backgroundColor: colorScheme.surface,
                         labelStyle: TextStyle(
                           color: isSelected
                               ? AppColors.black
@@ -273,10 +274,10 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: colorScheme.surfaceContainer,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppColors.grey.withValues(alpha: 0.3),
+                        color: colorScheme.outlineVariant,
                       ),
                     ),
                     child: Column(
@@ -336,7 +337,7 @@ class _GenerateInvoiceScreenState extends State<GenerateInvoiceScreen> {
                   Text(
                     title,
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.grey,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),

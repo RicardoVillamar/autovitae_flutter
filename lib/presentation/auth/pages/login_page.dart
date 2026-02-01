@@ -1,6 +1,7 @@
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
+import 'package:autovitae/presentation/shared/widgets/buttons/primary_button.dart';
+import 'package:autovitae/presentation/shared/widgets/buttons/secondary_button.dart';
 import 'package:autovitae/presentation/shared/widgets/inputs/text_field_custom.dart';
 import 'package:autovitae/viewmodels/login_viewmodel.dart';
 import 'package:autovitae/data/models/rol_usuario.dart';
@@ -41,11 +42,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor ingresa email y contraseña'),
-          backgroundColor: AppColors.error,
+        SnackBar(
+          content: const Text('Por favor ingresa email y contraseña'),
+          backgroundColor: colorScheme.error,
         ),
       );
       return;
@@ -79,12 +82,11 @@ class _LoginPageState extends State<LoginPage> {
           );
           _navigateByRole(authResult.rol, authResult.primerLoginGerente);
         }
-      }
-           else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(_viewModel.error ?? 'Error al iniciar sesión'),
-            backgroundColor: AppColors.error,
+            backgroundColor: colorScheme.error,
           ),
         );
       }
@@ -96,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: ${e.toString()}'),
-          backgroundColor: AppColors.error,
+          backgroundColor: colorScheme.error,
         ),
       );
     }
@@ -135,22 +137,27 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Container(
-        margin: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(color: AppColors.background),
+      body: Center(
         child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(24),
           children: [
-            const SizedBox(height: 60),
-            const Center(child: Text('AutoVitae', style: AppTextStyles.headline1)),
             const SizedBox(height: 16),
+            Center(
+                child: Text('AutoVitae',
+                    style: textTheme.headlineLarge
+                        ?.copyWith(color: colorScheme.primary))),
+            const SizedBox(height: 32),
             TxtffCustom(
               label: 'Email',
               screenWidth: screenWidth,
               controller: emailController,
               showCounter: false,
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
             TxtffCustom(
@@ -162,9 +169,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 10),
             CheckboxListTile(
-              title: const Text('Recordar sesión', style: AppTextStyles.bodyText),
+              title: Text('Recordar sesión', style: textTheme.bodyLarge),
               value: _rememberMe,
-              activeColor: AppColors.primaryColor,
+              activeColor: colorScheme.primary,
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               onChanged: (value) {
@@ -174,40 +181,17 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
             const SizedBox(height: 16),
-            TextButton(
+            PrimaryButton(
+              text: _isLoading ? 'Cargando...' : 'Iniciar Sesión',
+              isLoading: _isLoading,
               onPressed: _isLoading ? null : _login,
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(
-                  _isLoading ? AppColors.grey : AppColors.primaryColor,
-                ),
-                foregroundColor: WidgetStateProperty.all(AppColors.black),
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.black,
-                        ),
-                      ),
-                    )
-                  : const Text('Iniciar Sesión'),
             ),
             const SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/registerCliente');
-              },
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(
-                  AppColors.secondaryColor,
-                ),
-                foregroundColor: WidgetStateProperty.all(AppColors.black),
-              ),
-              child: const Text('Registrarse'),
-            ),
+            SecondaryButton(
+                text: 'Registrarse',
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/registerCliente');
+                }),
           ],
         ),
       ),

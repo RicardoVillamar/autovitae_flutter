@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:autovitae/viewmodels/login_viewmodel.dart';
 import 'package:autovitae/core/utils/validators.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -32,39 +30,39 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     super.dispose();
   }
 
-Future<void> _changePassword() async {
-  if (!_formKey.currentState!.validate()) return;
-  setState(() => _isLoading = true);
+  Future<void> _changePassword() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
 
-  try {
-    await _viewModel.changePassword(
-      _currentPasswordController.text,
-      _newPasswordController.text,
-    );
+    try {
+      await _viewModel.changePassword(
+        _currentPasswordController.text,
+        _newPasswordController.text,
+      );
 
-    final success = await _viewModel.updatePrimerLoginGerente();
-    
-    if (!success) {
-      throw Exception("No se pudo actualizar el estado en la base de datos");
+      final success = await _viewModel.updatePrimerLoginGerente();
+
+      if (!success) {
+        throw Exception("No se pudo actualizar el estado en la base de datos");
+      }
+
+      if (!mounted) return;
+
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/home_gerent', (r) => false);
+    } catch (e) {
+      setState(() => _isLoading = false);
     }
-
-    if (!mounted) return;
-
-    Navigator.of(context).pushNamedAndRemoveUntil('/home_gerent', (r) => false);
-  } catch (e) {
-    setState(() => _isLoading = false);
   }
-}
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Cambiar Contraseña'),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -74,31 +72,34 @@ Future<void> _changePassword() async {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              _buildHeaderIcon(),
+              _buildHeaderIcon(context),
               const SizedBox(height: 32),
               Text(
                 'Cambiar tu contraseña',
-                style: AppTextStyles.headline1,
+                style: textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 'Por seguridad, debes cambiar la contraseña temporal asignada.',
-                style: AppTextStyles.caption,
+                style: textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              
+
               TextFormField(
                 controller: _currentPasswordController,
                 obscureText: _obscureCurrentPassword,
                 decoration: _inputDecoration(
-                  'Contraseña Actual', 
+                  'Contraseña Actual',
                   Icons.lock_outline,
                   _obscureCurrentPassword,
-                  () => setState(() => _obscureCurrentPassword = !_obscureCurrentPassword),
+                  () => setState(
+                      () => _obscureCurrentPassword = !_obscureCurrentPassword),
                 ),
-                validator: RequiredValidator(errorText: 'La contraseña actual es requerida').call,
+                validator: RequiredValidator(
+                        errorText: 'La contraseña actual es requerida')
+                    .call,
               ),
               const SizedBox(height: 16),
 
@@ -106,10 +107,11 @@ Future<void> _changePassword() async {
                 controller: _newPasswordController,
                 obscureText: _obscureNewPassword,
                 decoration: _inputDecoration(
-                  'Nueva Contraseña', 
+                  'Nueva Contraseña',
                   Icons.lock,
                   _obscureNewPassword,
-                  () => setState(() => _obscureNewPassword = !_obscureNewPassword),
+                  () => setState(
+                      () => _obscureNewPassword = !_obscureNewPassword),
                 ),
                 validator: Validators.passwordValidator.call,
               ),
@@ -119,10 +121,11 @@ Future<void> _changePassword() async {
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirmPassword,
                 decoration: _inputDecoration(
-                  'Confirmar Nueva Contraseña', 
+                  'Confirmar Nueva Contraseña',
                   Icons.lock,
                   _obscureConfirmPassword,
-                  () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                  () => setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword),
                 ),
                 validator: (val) {
                   if (val != _newPasswordController.text) {
@@ -138,15 +141,20 @@ Future<void> _changePassword() async {
                 onPressed: _isLoading ? null : _changePassword,
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: AppColors.primaryColor,
-                    foregroundColor: AppColors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8))),
                 child: _isLoading
-                    ? const SizedBox(
-                        height: 20, width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: colorScheme.onPrimary),
                       )
-                    : const Text('Cambiar Contraseña', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    : const Text('Cambiar Contraseña',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -155,20 +163,22 @@ Future<void> _changePassword() async {
     );
   }
 
-  Widget _buildHeaderIcon() {
+  Widget _buildHeaderIcon(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.primaryColor.withOpacity(0.1),
+          color: colorScheme.primary.withAlpha(25),
           shape: BoxShape.circle,
         ),
-        child: const Icon(Icons.lock_reset, size: 80, color: AppColors.primaryColor),
+        child: Icon(Icons.lock_reset, size: 80, color: colorScheme.primary),
       ),
     );
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon, bool obscure, VoidCallback toggle) {
+  InputDecoration _inputDecoration(
+      String label, IconData icon, bool obscure, VoidCallback toggle) {
     return InputDecoration(
       labelText: label,
       prefixIcon: Icon(icon),

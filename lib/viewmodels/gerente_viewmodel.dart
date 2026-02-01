@@ -2,14 +2,12 @@ import 'package:autovitae/data/models/gerente.dart';
 import 'package:autovitae/data/models/usuario.dart';
 import 'package:autovitae/data/models/rol_usuario.dart';
 import 'package:autovitae/data/repositories/gerente_repository.dart';
-import 'package:autovitae/data/repositories/usuario_repository.dart';
 import 'package:autovitae/data/repositories/auth_repository.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GerenteViewModel {
   final GerenteRepository _gerenteRepository = GerenteRepository();
-  final UsuarioRepository _usuarioRepository = UsuarioRepository();
   final AuthRepository _authRepository = AuthRepository();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -50,7 +48,7 @@ class GerenteViewModel {
         telefono: telefono,
         rol: RolUsuario.gerente,
         estado: 1,
-        fotoUrl: fotoUrl, 
+        fotoUrl: fotoUrl,
       );
 
       await _firestore
@@ -59,7 +57,7 @@ class GerenteViewModel {
           .set(usuario.toFirestore());
 
       final gerente = Gerente(
-        uidGerente: uidUsuario, 
+        uidGerente: uidUsuario,
         uidUsuario: uidUsuario,
         uidTaller: null,
         primerLogin: true,
@@ -68,7 +66,7 @@ class GerenteViewModel {
       );
 
       await _firestore
-          .collection('gerente') 
+          .collection('gerente')
           .doc(uidUsuario)
           .set(gerente.toFirestore());
 
@@ -193,7 +191,7 @@ class GerenteViewModel {
     }
   }
 
-  // CRUD 
+  // CRUD
   Future<bool> actualizarGerente(String uid, Gerente gerente) async {
     _isLoading = true;
     _error = null;
@@ -241,7 +239,8 @@ class GerenteViewModel {
 
   Future<void> _updateLocalSession(String uidGerente) async {
     final session = await SessionManager().getSession();
-    if (session['gerente'] != null && session['gerente']['uidGerente'] == uidGerente) {
+    if (session['gerente'] != null &&
+        session['gerente']['uidGerente'] == uidGerente) {
       final updatedData = await _gerenteRepository.getById(uidGerente);
       if (updatedData != null) {
         await SessionManager().updateSession(gerente: updatedData);

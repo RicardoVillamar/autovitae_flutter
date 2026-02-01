@@ -3,7 +3,6 @@ import 'package:autovitae/data/models/usuario.dart';
 import 'package:autovitae/data/models/cliente.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -45,9 +44,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (_isLoading) {
       return Center(
-        child: CircularProgressIndicator(color: AppColors.primaryColor),
+        child: CircularProgressIndicator(color: colorScheme.primary),
       );
     }
 
@@ -60,20 +62,21 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.primaryColor.withValues(alpha: 0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.person, size: 60, color: AppColors.primaryColor),
+            child: Icon(Icons.person, size: 60, color: colorScheme.primary),
           ),
           const SizedBox(height: 24),
           Text(
             '${_usuario?.nombre ?? ''} ${_usuario?.apellido ?? ''}',
-            style: AppTextStyles.headline1,
+            style: textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
             _usuario?.correo ?? '',
-            style: AppTextStyles.bodyText.copyWith(color: AppColors.grey),
+            style: textTheme.bodyLarge
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 32),
           Card(
@@ -87,34 +90,34 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.badge, color: AppColors.primaryColor),
+                    child: Icon(Icons.badge, color: colorScheme.primary),
                   ),
-                  title: Text('Cédula', style: AppTextStyles.caption),
+                  title: Text('Cédula', style: textTheme.bodySmall),
                   subtitle: Text(
                     _usuario?.cedula ?? '',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
                 ),
                 Divider(
                   height: 1,
-                  color: AppColors.grey.withValues(alpha: 0.3),
+                  color: colorScheme.onSurface.withValues(alpha: 0.3),
                 ),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.phone, color: AppColors.primaryColor),
+                    child: Icon(Icons.phone, color: colorScheme.primary),
                   ),
-                  title: Text('Teléfono', style: AppTextStyles.caption),
+                  title: Text('Teléfono', style: textTheme.bodySmall),
                   subtitle: Text(
                     _usuario?.telefono ?? '',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
                 ),
                 Divider(
@@ -125,18 +128,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.location_on,
-                      color: AppColors.primaryColor,
+                      color: colorScheme.primary,
                     ),
                   ),
-                  title: Text('Dirección', style: AppTextStyles.caption),
+                  title: Text('Dirección', style: textTheme.bodySmall),
                   subtitle: Text(
                     _cliente?.direccion ?? 'No especificada',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
                 ),
               ],
@@ -154,13 +157,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.edit, color: AppColors.primaryColor),
+                    child: Icon(Icons.edit, color: colorScheme.primary),
                   ),
-                  title: Text('Editar Perfil', style: AppTextStyles.bodyText),
-                  trailing: Icon(
+                  title: Text('Editar Perfil', style: textTheme.bodyLarge),
+                  trailing: const Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
                     color: AppColors.grey,
@@ -175,16 +178,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.lock, color: AppColors.primaryColor),
+                    child: Icon(Icons.lock, color: colorScheme.primary),
                   ),
                   title: Text(
                     'Cambiar Contraseña',
-                    style: AppTextStyles.bodyText,
+                    style: textTheme.bodyLarge,
                   ),
-                  trailing: Icon(
+                  trailing: const Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
                     color: AppColors.grey,
@@ -204,13 +207,13 @@ class _ProfilePageState extends State<ProfilePage> {
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryColor.withValues(alpha: 0.1),
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.info_outline, color: AppColors.primaryColor),
+                child: Icon(Icons.info_outline, color: colorScheme.primary),
               ),
-              title: Text('Acerca de', style: AppTextStyles.bodyText),
-              subtitle: Text('AutoVitae v1.0.0', style: AppTextStyles.caption),
+              title: Text('Acerca de', style: textTheme.bodyLarge),
+              subtitle: Text('AutoVitae v1.0.0', style: textTheme.bodySmall),
               onTap: () {
                 showAboutDialog(
                   context: context,
@@ -219,19 +222,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   applicationIcon: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.directions_car,
                       size: 48,
-                      color: AppColors.primaryColor,
+                      color: colorScheme.primary,
                     ),
                   ),
                   children: [
                     Text(
                       'Sistema de gestión de mantenimiento vehicular',
-                      style: AppTextStyles.bodyText,
+                      style: textTheme.bodyLarge,
                     ),
                   ],
                 );

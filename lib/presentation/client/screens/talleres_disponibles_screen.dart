@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:autovitae/data/models/taller.dart';
 import 'package:autovitae/viewmodels/taller_viewmodel.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/client/screens/detalle_taller_screen.dart';
 import 'package:autovitae/presentation/shared/widgets/cards/generic_list_tile.dart';
+import 'package:autovitae/presentation/shared/widgets/appbar/custom_app_bar.dart';
 
 class TalleresDisponiblesScreen extends StatefulWidget {
   const TalleresDisponiblesScreen({super.key});
@@ -57,13 +57,14 @@ class _TalleresDisponiblesScreenState extends State<TalleresDisponiblesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Talleres Disponibles'),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
-        elevation: 0,
+      appBar: const CustomAppBar(
+        title: 'Talleres Disponibles',
+        showBackButton: true,
+        showMenu: true,
       ),
       body: Column(
         children: [
@@ -74,18 +75,18 @@ class _TalleresDisponiblesScreenState extends State<TalleresDisponiblesScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Buscar taller...',
-                hintStyle: AppTextStyles.caption,
-                prefixIcon: Icon(Icons.search, color: AppColors.primaryColor),
+                hintStyle: textTheme.bodyLarge,
+                prefixIcon: Icon(Icons.search, color: colorScheme.primary),
                 filled: true,
-                fillColor: AppColors.white,
+                fillColor: colorScheme.primary.withValues(alpha: 0.05),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey),
+                  borderSide: BorderSide(color: colorScheme.outline),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: AppColors.primaryColor,
+                    color: colorScheme.primary,
                     width: 2,
                   ),
                 ),
@@ -98,56 +99,56 @@ class _TalleresDisponiblesScreenState extends State<TalleresDisponiblesScreen> {
             child: _isLoading
                 ? Center(
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: colorScheme.primary,
                     ),
                   )
                 : _viewModel.talleres.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.store_mall_directory,
-                          size: 64,
-                          color: AppColors.grey,
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.store_mall_directory,
+                              size: 64,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No hay talleres disponibles',
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: AppColors.grey,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No hay talleres disponibles',
-                          style: AppTextStyles.bodyText.copyWith(
-                            color: AppColors.grey,
-                          ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _loadTalleres,
+                        color: colorScheme.primary,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: _viewModel.talleres.length,
+                          itemBuilder: (context, index) {
+                            final taller = _viewModel.talleres[index];
+                            return GenericListTile(
+                              onTap: () => _navigateToDetalle(taller),
+                              leadingIcon: Icon(
+                                Icons.build,
+                                color: colorScheme.primary,
+                                size: 32,
+                              ),
+                              leadingBackgroundColor: colorScheme.primary,
+                              title: taller.nombre,
+                              subtitle:
+                                  '${taller.direccion}\nTel: ${taller.telefono}',
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: AppColors.grey,
+                              ),
+                            );
+                          },
                         ),
-                      ],
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: _loadTalleres,
-                    color: AppColors.primaryColor,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: _viewModel.talleres.length,
-                      itemBuilder: (context, index) {
-                        final taller = _viewModel.talleres[index];
-                        return GenericListTile(
-                          onTap: () => _navigateToDetalle(taller),
-                          leadingIcon: Icon(
-                            Icons.build,
-                            color: AppColors.primaryColor,
-                            size: 32,
-                          ),
-                          leadingBackgroundColor: AppColors.primaryColor,
-                          title: taller.nombre,
-                          subtitle:
-                              '${taller.direccion}\nTel: ${taller.telefono}',
-                          trailing: Icon(
-                            Icons.chevron_right,
-                            color: AppColors.grey,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                      ),
           ),
         ],
       ),

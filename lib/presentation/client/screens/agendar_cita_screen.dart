@@ -7,8 +7,8 @@ import 'package:autovitae/viewmodels/vehiculo_viewmodel.dart';
 import 'package:autovitae/viewmodels/cita_viewmodel.dart';
 import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/shared/widgets/buttons/primary_button.dart';
+import 'package:autovitae/presentation/shared/widgets/appbar/custom_app_bar.dart';
 
 class AgendarCitaScreen extends StatefulWidget {
   final Taller taller;
@@ -116,8 +116,8 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Cita agendada exitosamente'),
+        const SnackBar(
+          content: Text('Cita agendada exitosamente'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -129,7 +129,9 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+      SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
@@ -143,17 +145,18 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Agendar Cita'),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
-        elevation: 0,
+      appBar: const CustomAppBar(
+        title: 'Agendar Cita',
+        showBackButton: true,
+        showMenu: true,
       ),
       body: _isLoading && _vehiculoViewModel.vehiculos.isEmpty
           ? Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
+              child: CircularProgressIndicator(color: colorScheme.primary),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -166,22 +169,22 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withValues(alpha: 0.1),
+                        color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.primaryColor),
+                        border: Border.all(color: colorScheme.primary),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.build, color: AppColors.primaryColor),
+                          Icon(Icons.build, color: colorScheme.primary),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Taller', style: AppTextStyles.caption),
+                                Text('Taller', style: textTheme.bodySmall),
                                 Text(
                                   widget.taller.nombre,
-                                  style: AppTextStyles.bodyText.copyWith(
+                                  style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -194,7 +197,7 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                     const SizedBox(height: 24),
 
                     // Vehicle selection
-                    Text('Vehículo', style: AppTextStyles.headline1),
+                    Text('Vehículo', style: textTheme.headlineSmall),
                     const SizedBox(height: 12),
                     if (_vehiculoViewModel.vehiculos.isEmpty)
                       Container(
@@ -206,12 +209,12 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.warning, color: AppColors.warning),
+                            const Icon(Icons.warning, color: AppColors.warning),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 'No tienes vehículos registrados. Registra un vehículo primero.',
-                                style: AppTextStyles.bodyText,
+                                style: textTheme.bodyLarge,
                               ),
                             ),
                           ],
@@ -222,8 +225,7 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                         index,
                       ) {
                         final vehiculo = _vehiculoViewModel.vehiculos[index];
-                        final isSelected =
-                            _selectedVehiculo?.uidVehiculo ==
+                        final isSelected = _selectedVehiculo?.uidVehiculo ==
                             vehiculo.uidVehiculo;
                         return Card(
                           margin: const EdgeInsets.only(bottom: 8),
@@ -231,7 +233,7 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                             borderRadius: BorderRadius.circular(12),
                             side: isSelected
                                 ? BorderSide(
-                                    color: AppColors.primaryColor,
+                                    color: colorScheme.primary,
                                     width: 2,
                                   )
                                 : BorderSide.none,
@@ -240,32 +242,31 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                             leading: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color:
-                                    (isSelected
-                                            ? AppColors.primaryColor
-                                            : AppColors.grey)
-                                        .withValues(alpha: 0.1),
+                                color: (isSelected
+                                        ? colorScheme.primary
+                                        : colorScheme.onSurfaceVariant)
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
                                 Icons.directions_car,
                                 color: isSelected
-                                    ? AppColors.primaryColor
-                                    : AppColors.grey,
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
                               ),
                             ),
                             title: Text(
                               '${vehiculo.marca ?? ''} ${vehiculo.modelo ?? ''}',
-                              style: AppTextStyles.bodyText,
+                              style: textTheme.bodyLarge,
                             ),
                             subtitle: Text(
                               'Placa: ${vehiculo.placa ?? 'Sin placa'}',
-                              style: AppTextStyles.caption,
+                              style: textTheme.bodySmall,
                             ),
                             trailing: isSelected
                                 ? Icon(
                                     Icons.check_circle,
-                                    color: AppColors.primaryColor,
+                                    color: colorScheme.primary,
                                   )
                                 : null,
                             onTap: () {
@@ -277,7 +278,7 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                     const SizedBox(height: 24),
 
                     // Date and time
-                    Text('Fecha y Hora', style: AppTextStyles.headline1),
+                    Text('Fecha y Hora', style: textTheme.headlineSmall),
                     const SizedBox(height: 12),
                     Row(
                       children: [
@@ -287,17 +288,16 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: AppColors.grey.withValues(alpha: 0.3),
-                                ),
+                                    color: colorScheme.outlineVariant),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     Icons.calendar_today,
-                                    color: AppColors.primaryColor,
+                                    color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 12),
                                   Column(
@@ -306,11 +306,11 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                                     children: [
                                       Text(
                                         'Fecha',
-                                        style: AppTextStyles.caption,
+                                        style: textTheme.bodySmall,
                                       ),
                                       Text(
                                         _formatDate(_selectedDate),
-                                        style: AppTextStyles.bodyText.copyWith(
+                                        style: textTheme.bodyLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -328,17 +328,17 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: AppColors.grey.withValues(alpha: 0.3),
+                                  color: colorScheme.outlineVariant,
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     Icons.access_time,
-                                    color: AppColors.primaryColor,
+                                    color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 12),
                                   Column(
@@ -347,11 +347,11 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                                     children: [
                                       Text(
                                         'Hora',
-                                        style: AppTextStyles.caption,
+                                        style: textTheme.bodySmall,
                                       ),
                                       Text(
                                         _formatTime(_selectedTime),
-                                        style: AppTextStyles.bodyText.copyWith(
+                                        style: textTheme.bodyLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -369,7 +369,7 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                     // Description
                     Text(
                       'Descripción (Opcional)',
-                      style: AppTextStyles.headline1,
+                      style: textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -378,19 +378,19 @@ class _AgendarCitaScreenState extends State<AgendarCitaScreen> {
                       decoration: InputDecoration(
                         hintText:
                             'Describe el problema o servicio que necesitas...',
-                        hintStyle: AppTextStyles.caption,
+                        hintStyle: textTheme.bodySmall,
                         filled: true,
-                        fillColor: AppColors.white,
+                        fillColor: colorScheme.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: AppColors.grey.withValues(alpha: 0.3),
+                            color: colorScheme.outlineVariant,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: AppColors.primaryColor,
+                            color: colorScheme.primary,
                             width: 2,
                           ),
                         ),

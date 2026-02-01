@@ -7,6 +7,7 @@ import 'package:autovitae/core/utils/session_manager.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
 import 'package:autovitae/presentation/shared/widgets/inputs/text_field_custom.dart';
 import 'package:autovitae/core/utils/validators.dart';
+import 'package:autovitae/presentation/shared/widgets/appbar/custom_app_bar.dart';
 
 class VehiculoClienteScreen extends StatefulWidget {
   final Vehiculo? vehiculo;
@@ -231,12 +232,10 @@ class _VehiculoClienteScreenState extends State<VehiculoClienteScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEditing ? 'Editar Vehículo' : 'Nuevo Vehículo'),
-        backgroundColor: colorScheme.surfaceContainerLowest,
-        foregroundColor: colorScheme.onSurface,
-        centerTitle: true,
-        elevation: 0,
+      appBar: CustomAppBar(
+        title: isEditing ? 'Editar Vehículo' : 'Nuevo Vehículo',
+        showBackButton: true,
+        showMenu: false,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

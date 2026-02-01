@@ -30,6 +30,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -50,19 +52,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icons.directions_car,
                   title: 'Mis Vehículos',
                   subtitle: 'Ver mis vehículos',
-                  color: AppColors.primaryColor,
+                  color: colorScheme.primary,
                   onTap: () {
-                    // Navigate to vehicles tab
-                    DefaultTabController.of(context).animateTo(1);
+                    Navigator.of(context).pushNamed('/vehiculos_cliente');
                   },
                 ),
                 DashboardCard(
                   icon: Icons.calendar_today,
                   title: 'Agendar Cita',
                   subtitle: 'Nueva cita',
-                  color: AppColors.secondaryColor,
+                  color: colorScheme.secondary,
                   onTap: () {
-                    Navigator.of(context).pushNamed('/create_cita');
+                    Navigator.of(context).pushNamed('/talleres_cliente');
                   },
                 ),
                 DashboardCard(
@@ -71,26 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   subtitle: 'Seleccionar taller',
                   color: AppColors.warning,
                   onTap: () {
-                     Navigator.of(context).pushNamed('/talleres_cliente');
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.history,
-                  title: 'Historial',
-                  subtitle: 'Ver historial',
-                  color: AppColors.success,
-                  onTap: () {
-                    // Navigate to history tab
-                    DefaultTabController.of(context).animateTo(2);
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.local_shipping,
-                  title: 'Solicitar Remolque',
-                  subtitle: 'Servicio de grúa',
-                  color: AppColors.error,
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/solicitar_remolque');
+                    Navigator.of(context).pushNamed('/talleres_cliente');
                   },
                 ),
                 DashboardCard(

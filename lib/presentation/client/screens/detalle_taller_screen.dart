@@ -4,9 +4,9 @@ import 'package:autovitae/data/models/servicio_taller.dart';
 import 'package:autovitae/data/models/categoria_serivicio_taller.dart';
 import 'package:autovitae/viewmodels/servicio_taller_viewmodel.dart';
 import 'package:autovitae/core/theme/app_colors.dart';
-import 'package:autovitae/core/theme/app_fonts.dart';
 import 'package:autovitae/presentation/client/screens/agendar_cita_screen.dart';
 import 'package:autovitae/presentation/client/screens/programar_mantenimiento_screen.dart';
+import 'package:autovitae/presentation/shared/widgets/appbar/custom_app_bar.dart';
 
 class DetalleTallerScreen extends StatefulWidget {
   final Taller taller;
@@ -14,27 +14,22 @@ class DetalleTallerScreen extends StatefulWidget {
   const DetalleTallerScreen({super.key, required this.taller});
 
   @override
-  State<DetalleTallerScreen> createState() =>
-      _DetalleTallerScreenState();
+  State<DetalleTallerScreen> createState() => _DetalleTallerScreenState();
 }
 
-class _DetalleTallerScreenState extends State<DetalleTallerScreen>
-    with SingleTickerProviderStateMixin {
+class _DetalleTallerScreenState extends State<DetalleTallerScreen> {
   final ServicioTallerViewModel _servicioViewModel = ServicioTallerViewModel();
-  late TabController _tabController;
   bool _isLoading = false;
   CategoriaSerivicioTaller? _selectedCategoria;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _loadServicios();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -80,27 +75,137 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(widget.taller.nombre),
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.black,
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppColors.black,
-          labelColor: AppColors.black,
-          unselectedLabelColor: AppColors.black.withValues(alpha: 0.6),
-          tabs: const [
-            Tab(text: 'Información', icon: Icon(Icons.info_outline)),
-            Tab(text: 'Servicios', icon: Icon(Icons.build)),
+      appBar: CustomAppBar(
+        title: widget.taller.nombre,
+        showBackButton: true,
+        showMenu: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header image/icon
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: colorScheme.tertiary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.build, size: 64, color: colorScheme.tertiary),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Center(
+              child: Text(
+                widget.taller.nombre,
+                style: textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Contact info
+            Text('Información de Contacto', style: textTheme.titleLarge),
+            const SizedBox(height: 16),
+            _buildInfoCard(
+              icon: Icons.location_on,
+              title: 'Dirección',
+              value: widget.taller.direccion,
+            ),
+            _buildInfoCard(
+              icon: Icons.phone,
+              title: 'Teléfono',
+              value: widget.taller.telefono,
+            ),
+            _buildInfoCard(
+              icon: Icons.email,
+              title: 'Correo',
+              value: widget.taller.correo,
+            ),
+
+            // Description
+            if (widget.taller.descripcion.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              Text('Descripción', style: textTheme.titleLarge),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant,
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  widget.taller.descripcion,
+                  style: textTheme.bodyLarge,
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 32),
+            Text('Servicios Disponibles', style: textTheme.titleLarge),
+            const SizedBox(height: 12),
+
+            SizedBox(
+              height: 48,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildFilterChip('Todos', null),
+                  ...CategoriaSerivicioTaller.values.map(
+                    (cat) => _buildFilterChip(_getCategoriaLabel(cat), cat),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Services list
+            if (_isLoading)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: CircularProgressIndicator(color: colorScheme.primary),
+                ),
+              )
+            else if (_serviciosFiltrados.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    children: [
+                      Icon(Icons.build_circle,
+                          size: 48, color: colorScheme.outline),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No hay servicios disponibles',
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ..._serviciosFiltrados
+                  .map((servicio) => _buildServicioCard(servicio)),
+
+            // Espacio para los FABs
+            const SizedBox(height: 180),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildInfoTab(), _buildServicesPage()],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -111,12 +216,13 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ProgramarMantenimientoScreen(taller: widget.taller),
+                  builder: (context) =>
+                      ProgramarMantenimientoScreen(taller: widget.taller),
                 ),
               );
             },
-            backgroundColor: AppColors.warning,
-            foregroundColor: AppColors.black,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             icon: const Icon(Icons.build_circle),
             label: const Text('Programar Mantenimiento'),
           ),
@@ -124,8 +230,8 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
           FloatingActionButton.extended(
             heroTag: 'cita',
             onPressed: _agendarCita,
-            backgroundColor: AppColors.primaryColor,
-            foregroundColor: AppColors.black,
+            backgroundColor: colorScheme.tertiary,
+            foregroundColor: colorScheme.onTertiary,
             icon: const Icon(Icons.calendar_today),
             label: const Text('Agendar Cita'),
           ),
@@ -134,130 +240,8 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
     );
   }
 
-  Widget _buildInfoTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header image/icon
-          Center(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.build, size: 64, color: AppColors.primaryColor),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Center(
-            child: Text(
-              widget.taller.nombre,
-              style: AppTextStyles.headline1,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 32),
-          // Contact info
-          Text('Información de Contacto', style: AppTextStyles.headline1),
-          const SizedBox(height: 16),
-          _buildInfoCard(
-            icon: Icons.location_on,
-            title: 'Dirección',
-            value: widget.taller.direccion,
-          ),
-          _buildInfoCard(
-            icon: Icons.phone,
-            title: 'Teléfono',
-            value: widget.taller.telefono,
-          ),
-          _buildInfoCard(
-            icon: Icons.email,
-            title: 'Correo',
-            value: widget.taller.correo,
-          ),
-          const SizedBox(height: 24),
-          // Description
-          if (widget.taller.descripcion.isNotEmpty) ...[
-            Text('Descripción', style: AppTextStyles.headline1),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.grey.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Text(
-                widget.taller.descripcion,
-                style: AppTextStyles.bodyText,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServicesPage() {
-    return Column(
-      children: [
-        // Category filter
-        Container(
-          height: 56,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildFilterChip('Todos', null),
-              ...CategoriaSerivicioTaller.values.map(
-                (cat) => _buildFilterChip(_getCategoriaLabel(cat), cat),
-              ),
-            ],
-          ),
-        ),
-        // Services list
-        Expanded(
-          child: _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              : _serviciosFiltrados.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.build_circle, size: 64, color: AppColors.grey),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No hay servicios disponibles',
-                        style: AppTextStyles.bodyText.copyWith(
-                          color: AppColors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _serviciosFiltrados.length,
-                  itemBuilder: (context, index) {
-                    return _buildServicioCard(_serviciosFiltrados[index]);
-                  },
-                ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildFilterChip(String label, CategoriaSerivicioTaller? categoria) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isSelected = _selectedCategoria == categoria;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -269,11 +253,11 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
             _selectedCategoria = selected ? categoria : null;
           });
         },
-        selectedColor: AppColors.primaryColor,
-        backgroundColor: AppColors.white,
-        checkmarkColor: AppColors.black,
+        selectedColor: colorScheme.primary,
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        checkmarkColor: colorScheme.onPrimary,
         labelStyle: TextStyle(
-          color: isSelected ? AppColors.black : AppColors.textColor,
+          color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -281,6 +265,9 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
   }
 
   Widget _buildServicioCard(ServicioTaller servicio) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -292,12 +279,12 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.secondaryColor.withValues(alpha: 0.1),
+                color: colorScheme.secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 Icons.build,
-                color: AppColors.secondaryColor,
+                color: colorScheme.secondary,
                 size: 24,
               ),
             ),
@@ -308,7 +295,7 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
                 children: [
                   Text(
                     servicio.nombre,
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -316,7 +303,7 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
                     const SizedBox(height: 4),
                     Text(
                       servicio.descripcion!,
-                      style: AppTextStyles.caption,
+                      style: textTheme.bodySmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -324,10 +311,10 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
                   const SizedBox(height: 4),
                   Chip(
                     label: Text(_getCategoriaLabel(servicio.categoria)),
-                    backgroundColor: AppColors.primaryColor.withValues(
+                    backgroundColor: colorScheme.primary.withValues(
                       alpha: 0.2,
                     ),
-                    labelStyle: AppTextStyles.caption.copyWith(fontSize: 11),
+                    labelStyle: textTheme.bodySmall?.copyWith(fontSize: 11),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
                   ),
@@ -336,7 +323,7 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
             ),
             Text(
               '\$${servicio.precio.toStringAsFixed(2)}',
-              style: AppTextStyles.bodyText.copyWith(
+              style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.success,
               ),
@@ -352,6 +339,9 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
     required String title,
     required String value,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 1,
@@ -363,10 +353,10 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.1),
+                color: colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: AppColors.primaryColor),
+              child: Icon(icon, color: colorScheme.primary),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -375,14 +365,14 @@ class _DetalleTallerScreenState extends State<DetalleTallerScreen>
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.grey,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: AppTextStyles.bodyText.copyWith(
+                    style: textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                   ),

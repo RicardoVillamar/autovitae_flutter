@@ -40,7 +40,8 @@ class PrimaryButton extends StatelessWidget {
                 width: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
                 ),
               )
             : Text(
@@ -48,6 +49,7 @@ class PrimaryButton extends StatelessWidget {
                 style: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  color: textColor ?? colorScheme.onPrimary,
                 ),
               ),
       ),

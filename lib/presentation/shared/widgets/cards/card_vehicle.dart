@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:autovitae/data/models/vehiculo.dart';
-import 'package:autovitae/core/theme/app_colors.dart';
 
 class VehicleCard extends StatelessWidget {
   final Vehiculo vehiculo;
